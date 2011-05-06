@@ -1,0 +1,244 @@
+{{{
+
+package wiki.web.wiki;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.util.HtmlUtils;
+
+import wiki.domain.page.Page;
+import wiki.domain.page.PageRepository;
+import cylon.dom.Bold;
+import cylon.dom.Code;
+import cylon.dom.Document;
+import cylon.dom.DomVisitor;
+import cylon.dom.ForcedLinebreak;
+import cylon.dom.Heading;
+import cylon.dom.HorizontalLine;
+import cylon.dom.Image;
+import cylon.dom.Italic;
+import cylon.dom.ListItem;
+import cylon.dom.OrderedList;
+import cylon.dom.PageLink;
+import cylon.dom.Paragraph;
+import cylon.dom.Preformatted;
+import cylon.dom.Strike;
+import cylon.dom.Subscript;
+import cylon.dom.Superscript;
+import cylon.dom.Table;
+import cylon.dom.TableCell;
+import cylon.dom.TableRow;
+import cylon.dom.Underline;
+import cylon.dom.Unformatted;
+import cylon.dom.UnorderedList;
+import cylon.dom.UrlLink;
+
+public class ViewPageRenderer implements DomVisitor {
+	private PageRepository pageRepository;
+	private Page page;
+	private HttpServletResponse response;
+	private StringBuffer buffer = new StringBuffer();
+	
+	public ViewPageRenderer(PageRepository pageRepository, Page page, HttpServletResponse response) {
+		this.pageRepository = pageRepository;
+		this.page = page;
+		this.response = response;
+	}
+	
+	public String asString() {
+		return buffer.toString();
+	}
+	
+	public void visitEnter(Document dom) {
+	}
+	public void visitLeave(Document dom) {
+	}
+
+	public void visit(Heading dom) {
+		buffer.append("<h" + dom.getLevel() + ">" + htmlEscape(dom.getTitle()) + "</h" + dom.getLevel() + ">");
+	}
+
+	public void visit(HorizontalLine dom) {
+		buffer.append("<hr />");
+	}	
+	
+	public void visitEnter(Paragraph dom) {
+		buffer.append("<p>");
+	}
+	public void visitLeave(Paragraph dom) {
+		buffer.append("</p>");
+	}
+	
+	public void visit(Unformatted dom) {
+		buffer.append(htmlEscape(dom.getText()));
+	}
+
+	public void visitEnter(Italic dom) {
+		buffer.append("<em>");
+	}
+	public void visitLeave(Italic dom) {
+		buffer.append("</em>");
+	}
+
+	public void visitEnter(Bold dom) {
+		buffer.append("<strong>");
+	}
+	public void visitLeave(Bold dom) {
+		buffer.append("</strong>");
+	}
+	
+	public void visitEnter(Table dom) {
+		buffer.append("<table>");
+	}
+	
+	public void visitLeave(Table dom) {
+		buffer.append("</table>");
+	}
+
+	public void visitEnter(TableRow dom) {
+		buffer.append("<tr>");		
+	}
+
+	public void visitLeave(TableRow dom) {
+		buffer.append("</tr>");
+	}
+	public void visitEnter(TableCell dom) {
+		if(dom.isHead()) buffer.append("<th>");
+		else buffer.append("<td>");
+	}
+
+	public void visitLeave(TableCell dom) {
+		if(dom.isHead()) buffer.append("</th>");
+		else buffer.append("</td>");
+	}
+	
+	public void visit(Image image) {
+		buffer.append("<img src=\"" + htmlEscape(image.getUri()) + "\"");
+		if(image.hasAlternative()) {
+			 buffer.append(" alt=\"" + htmlEscape(image.getAlternative()) + "\"");
+		}
+		buffer.append(" />");
+	}
+
+	public void visitEnter(PageLink dom) {
+		String pageUrl = null;
+		String pageWikiId = dom.isNeighborhoodPage() ? dom.getNeighborhoodId() : page.getWikiId();
+		String pageName = dom.getPageName();
+		if (pageRepository.findByName(pageWikiId, pageName) == null) {
+			pageUrl = "/wiki/EditPage.nhn?wikiId=" + pageWikiId + "&amp;pageParentId=" + page.getId() + "&amp;pageName=" + pageName;
+		} else {
+			pageUrl = "/wiki/ViewPage.nhn?wikiId=" + pageWikiId + "&amp;pageName=" + pageName;
+		}
+		buffer.append("<a href=\"" + response.encodeURL(pageUrl) + "\">");
+		if (!dom.hasDescription()) {
+			buffer.append(htmlEscape(dom.getUri()));
+		}
+	}
+	
+	public void visitLeave(PageLink dom) {
+		buffer.append("</a>");
+	}
+
+	public void visitEnter(UrlLink dom) {
+		String url = dom.getUrl();
+		if (dom.isSafeUrl()) {
+			buffer.append("<a href=\"" + htmlEscape(url) + "\">");
+		}
+		if (!dom.hasDescription()) {
+			buffer.append(htmlEscape(url));
+		}
+	}
+
+	public void visitLeave(UrlLink dom) {
+		if (dom.isSafeUrl()) {
+			buffer.append("</a>");
+		}
+	}
+	
+	String htmlEscape(String input) {
+		return HtmlUtils.htmlEscape(input);
+	}
+
+	public void visitEnter(UnorderedList dom) {
+		buffer.append("<ul>");
+	}
+
+	public void visitLeave(UnorderedList dom) {
+		buffer.append("</ul>");
+	}
+
+	public void visitEnter(OrderedList dom) {
+		buffer.append("<ol>");
+	}
+
+	public void visitLeave(OrderedList dom) {
+		buffer.append("</ol>");
+	}
+
+	public void visitEnter(ListItem dom) {
+		buffer.append("<li>");
+	}
+
+	public void visitLeave(ListItem dom) {
+		buffer.append("</li>");
+	}
+
+	public void visitEnter(Superscript dom) {
+		buffer.append("<sup>");
+	}
+
+	public void visitLeave(Superscript dom) {
+		buffer.append("</sup>");
+	}
+
+	public void visitEnter(Subscript dom) {
+		buffer.append("<sub>");
+	}
+
+	public void visitLeave(Subscript dom) {
+		buffer.append("</sub>");
+	}
+
+	public void visitEnter(Strike dom) {
+		buffer.append("<strike>");
+	}
+
+	public void visitLeave(Strike dom) {
+		buffer.append("</strike>");
+	}
+
+	public void visitEnter(Underline dom) {
+		buffer.append("<u>");
+	}
+
+	public void visitLeave(Underline dom) {
+		buffer.append("</u>");
+	}
+
+	public void visit(Preformatted dom) {
+		buffer.append("<pre");
+		if (dom.hasInterpreter()) {
+			String[] cmd = dom.getInterpreter().split("\\s+");
+			if (cmd[0].equals("syntax")) {
+				buffer.append(" name=\"code\" class=\"");
+				buffer.append(cmd[1]);
+				buffer.append("\"");
+			}
+		}
+		buffer.append(">");
+		buffer.append(HtmlUtils.htmlEscape(dom.getText()));
+		buffer.append("</pre>");
+	}
+
+	public void visit(Code dom) {
+		buffer.append("<code>");
+		buffer.append(HtmlUtils.htmlEscape(dom.getText()));
+		buffer.append("</code>");
+	}
+
+	public void visit(ForcedLinebreak dom) {
+		buffer.append("<br />");
+	}
+}
+
+}}}
