@@ -6,7 +6,7 @@ package cylon.creole;
  * 
  * 클라이언트에서 어떤 때는 추상화 정도가 다른 newline/emit, markup, bold/italic/.../etc 을 섞어 쓰고 있는데 추상화 정도가 같도록 하면 좋겠다.
  */
-public class WikiMarkupBuilder {
+public class CreoleMarkupBuilder {
 	private StringBuilder buffer = new StringBuilder();
 
 	public String toString() {
@@ -50,12 +50,12 @@ public class WikiMarkupBuilder {
 		return true;
 	}
 
-	public WikiMarkupBuilder newline() {
+	public CreoleMarkupBuilder newline() {
 		newline(false);
 		return this;
 	}
 	
-	public WikiMarkupBuilder newline(boolean force) {
+	public CreoleMarkupBuilder newline(boolean force) {
 		if (force) {
 			buffer.append('\n');
 			return this;
@@ -70,19 +70,19 @@ public class WikiMarkupBuilder {
 		return this;
 	}
 	
-	public WikiMarkupBuilder emit(char c, int times) {
+	public CreoleMarkupBuilder emit(char c, int times) {
 		for (int i = 0; i < times; i++) {
 			buffer.append(c);
 		}
 		return this;
 	}
 	
-	public WikiMarkupBuilder emit(String str) {
+	public CreoleMarkupBuilder emit(String str) {
 		buffer.append(str);
 		return this;
 	}
 	
-	public WikiMarkupBuilder markup(String markup) {
+	public CreoleMarkupBuilder markup(String markup) {
 		if (isChar(-1, markup.charAt(0)) && !isChar(-2, '~')) {
 			buffer.insert(buffer.length() - 1, '~');
 		}
@@ -90,42 +90,42 @@ public class WikiMarkupBuilder {
 		return this;
 	}
 	
-	public WikiMarkupBuilder bold() {
+	public CreoleMarkupBuilder bold() {
 		return markup("**");
 	}
 
-	public WikiMarkupBuilder italic() {
+	public CreoleMarkupBuilder italic() {
 		return markup("//");
 	}
 
-	public WikiMarkupBuilder superscript() {
+	public CreoleMarkupBuilder superscript() {
 		return markup("^^");
 	}
 
-	public WikiMarkupBuilder subscript() {
+	public CreoleMarkupBuilder subscript() {
 		return markup(",,");
 	}
 
-	public WikiMarkupBuilder strike() {
+	public CreoleMarkupBuilder strike() {
 		return markup("--");
 	}
 
-	public WikiMarkupBuilder underline() {
+	public CreoleMarkupBuilder underline() {
 		return markup("__");
 	}
 
-	public WikiMarkupBuilder citation() {
+	public CreoleMarkupBuilder citation() {
 		return markup("``");
 	}
 
-	public WikiMarkupBuilder forcedLinebreak() {
+	public CreoleMarkupBuilder forcedLinebreak() {
 		return markup("\\\\");
 	}
 
 	private static final String INLINE_PUNCT = "\\*/_-^,[]{}<>`";
 	private static final String LIST_PUNCT = "#*";
 	private static final String BLOCK_PUNCT = "=-|>{[" + LIST_PUNCT;
-	public WikiMarkupBuilder unformatted(String str) {
+	public CreoleMarkupBuilder unformatted(String str) {
 		for (int i = 0; i < str.length(); i++) {
 			char c = str.charAt(i);
 			if (BLOCK_PUNCT.indexOf(c) >= 0 && isOnNewLine()) {
@@ -143,7 +143,7 @@ public class WikiMarkupBuilder {
 	}
 	
 	private static final String PREFORMATTED_PUNCTATIONS_REGEX = "(^\\}\\}\\})";
-	public WikiMarkupBuilder preformatted(String str) {
+	public CreoleMarkupBuilder preformatted(String str) {
 		buffer.append(str.replaceAll(PREFORMATTED_PUNCTATIONS_REGEX, "~$1"));
 		return this;
 	}

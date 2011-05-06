@@ -1,5 +1,5 @@
 package cylon.dom;
 
-public interface DomNode {
+public interface Node {
 	void accept(DomVisitor visitor);
 }

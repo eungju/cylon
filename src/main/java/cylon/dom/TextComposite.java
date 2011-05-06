@@ -6,7 +6,7 @@ import java.util.List;
 
 import cylon.support.ObjectSupport;
 
-public abstract class TextComposite extends ObjectSupport implements DomNode {
+public abstract class TextComposite extends ObjectSupport implements Node {
 	List<Text> children;
 
 	TextComposite(Text...children) {

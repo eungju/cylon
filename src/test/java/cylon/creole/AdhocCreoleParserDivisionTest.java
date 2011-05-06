@@ -1,18 +1,16 @@
 package cylon.creole;
 
-import static org.junit.Assert.*;
-
-import cylon.creole.PlainWikiParser;
+import cylon.dom.DomBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
-import cylon.dom.DomBuilder;
+import static org.junit.Assert.*;
 
-public class DivisionPlainWikiParserTest extends DomBuilder {
-	PlainWikiParser parser;
+public class AdhocCreoleParserDivisionTest extends DomBuilder {
+	AdhocCreoleParser parser;
 
 	@Before public void beforeEach() {
-		parser = new PlainWikiParser();
+		parser = new AdhocCreoleParser();
 	}
 	
 	@Test public void noteHasTexts() {

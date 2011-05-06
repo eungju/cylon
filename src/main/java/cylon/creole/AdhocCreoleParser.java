@@ -35,12 +35,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PlainWikiParser {
+public class AdhocCreoleParser {
 	static abstract class TokenRule extends Rule {
 		public TokenRule(String expression) {
 			super(expression);
 		}
-		public abstract void matched(String[] group, PlainWikiParser parser);
+		public abstract void matched(String[] group, AdhocCreoleParser parser);
 	}
 	
 	static abstract class BlockRule extends TokenRule {
@@ -56,7 +56,7 @@ public class PlainWikiParser {
 		public BlockSeparatorRule() {
 			super("(?:^\\p{Blank}*" + NEWLINE + ")+");
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			parser.cursor.ascendUntil(Document.class);
 		}
 	}
@@ -65,7 +65,7 @@ public class PlainWikiParser {
 		public HeadingRule() {
 			super("^(={1,5})(.*?)(=*)\\p{Blank}*$");
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			Document parent = parser.cursor.ascendUntil(Document.class);
 			Heading node = new Heading(group[1].length(), group[2]);
 			parent.addChild(node);
@@ -76,7 +76,7 @@ public class PlainWikiParser {
 		public HorizontalLineRule() {
 			super("^----\\p{Blank}*$");
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			Document parent = parser.cursor.ascendUntil(Document.class);
 			HorizontalLine node = new HorizontalLine();
 			parent.addChild(node);
@@ -87,7 +87,7 @@ public class PlainWikiParser {
 		public PreformattedRule() {
 			super("^\\{\\{\\{(?:#!(.+))?\\p{Blank}*" + NEWLINE + "((?s:.)*?)^\\}\\}\\}\\p{Blank}*$");
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			Document parent = parser.cursor.ascendUntil(Document.class);
 			Preformatted node = new Preformatted(group[1], group[2].replaceAll("^~(}}})", "$1"));
 			parent.addChild(node);
@@ -99,7 +99,7 @@ public class PlainWikiParser {
 		public ListRule() {
 			super("(?:^\\p{Blank}*(?:\\*[^*#]|#[^*#]).*)(?:" + NEWLINE + "^\\p{Blank}*[*#]+.*)*$");
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			int depth = 0;
 			Matcher matcher = listItemPattern.matcher(group[0]);
 			while (matcher.find()) {
@@ -155,7 +155,7 @@ public class PlainWikiParser {
 			super("^\\|.+\\|\\p{Blank}*$");
 		}
 		
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			if (!parser.cursor.is(Table.class)) {
 				Document parent = parser.cursor.ascendUntil(Document.class);
 				Table newBlock = new Table();
@@ -174,7 +174,7 @@ public class PlainWikiParser {
 			parser.cursor.ascendAndAssert(row);
 		}
 
-		public TableCell tableCell_(String[] group, PlainWikiParser parser) {
+		public TableCell tableCell_(String[] group, AdhocCreoleParser parser) {
 			TableRow parent = parser.cursor.ascendUntil(TableRow.class);
 			boolean head = group[1] != null;
 			TableCell node = new TableCell(head);
@@ -193,7 +193,7 @@ public class PlainWikiParser {
 		public QuotationRule() {
 			super("^\\[\\[\\[quotation\\p{Blank}*" + NEWLINE + "((?s:.)*?)^\\]\\]\\]\\p{Blank}*$");
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			Document parent = parser.cursor.ascendUntil(Document.class);
 			Quotation node = new Quotation();
 			parent.addChild(node);
@@ -207,7 +207,7 @@ public class PlainWikiParser {
 		public NoteRule() {
 			super("^\\[\\[\\[note\\p{Blank}*" + NEWLINE + "((?s:.)*?)^\\]\\]\\]\\p{Blank}*$");
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			Document parent = parser.cursor.ascendUntil(Document.class);
 			Note node = new Note();
 			parent.addChild(node);
@@ -221,7 +221,7 @@ public class PlainWikiParser {
 		public TipRule() {
 			super("^\\[\\[\\[tip\\p{Blank}*" + NEWLINE + "((?s:.)*?)^\\]\\]\\]\\p{Blank}*$");
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			Document parent = parser.cursor.ascendUntil(Document.class);
 			Tip node = new Tip();
 			parent.addChild(node);
@@ -235,7 +235,7 @@ public class PlainWikiParser {
 		public ParagraphRule() {
 			super("^(>+)?(.+)");
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			int groupIndex = 0;
 			if (!parser.cursor.isDescendedFrom(Paragraph.class) || group[1] != null) {
 				Document parent = parser.cursor.ascendUntil(Document.class);
@@ -256,7 +256,7 @@ public class PlainWikiParser {
 			super(expression);
 		}
 
-		<T extends Text> void inlineOpenClose(Class<T> type, T newNode, PlainWikiParser parser) {
+		<T extends Text> void inlineOpenClose(Class<T> type, T newNode, AdhocCreoleParser parser) {
 			if (parser.cursor.is(type)) {
 				T node = parser.cursor.ascendUntil(type);
 				parser.cursor.ascendAndAssert(node);
@@ -284,7 +284,7 @@ public class PlainWikiParser {
 		public LinkRule() {
 			super(REGEX);
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
 			Link node = new Link(group[1]);
 			parent.addChild(node);
@@ -302,7 +302,7 @@ public class PlainWikiParser {
 		public CodeRule() {
 			super(REGEX);
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
 			Code node = new Code(group[1]);
 			parent.addChild(node);
@@ -315,7 +315,7 @@ public class PlainWikiParser {
 		public ImageRule() {
 			super(REGEX);
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
 			Map<String, String> options = options(group[2]);
 			Image node = new Image(group[1], options.get("alt"), options.get("align"));
@@ -338,7 +338,7 @@ public class PlainWikiParser {
 		public CitationRule() {
 			super(REGEX);
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
 			Text explanation = null;
 			if (group[1] == null) {
@@ -355,7 +355,7 @@ public class PlainWikiParser {
 		public BoldRule() {
 			super("\\*\\*");
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			inlineOpenClose(Bold.class, new Bold(), parser);			
 		}
 	}
@@ -364,7 +364,7 @@ public class PlainWikiParser {
 		public ItalicRule() {
 			super("//");
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			inlineOpenClose(Italic.class, new Italic(), parser);			
 		}
 	}
@@ -373,7 +373,7 @@ public class PlainWikiParser {
 		public UnderlineRule() {
 			super("__");
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			inlineOpenClose(Underline.class, new Underline(), parser);			
 		}
 	}
@@ -382,7 +382,7 @@ public class PlainWikiParser {
 		public StrikeRule() {
 			super("--");
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			inlineOpenClose(Strike.class, new Strike(), parser);			
 		}
 	}
@@ -391,7 +391,7 @@ public class PlainWikiParser {
 		public SuperscriptRule() {
 			super("\\^\\^");
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			inlineOpenClose(Superscript.class, new Superscript(), parser);			
 		}
 	}
@@ -400,7 +400,7 @@ public class PlainWikiParser {
 		public SubscriptRule() {
 			super(",,");
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			inlineOpenClose(Subscript.class, new Subscript(), parser);			
 		}
 	}
@@ -409,7 +409,7 @@ public class PlainWikiParser {
 		public ForcedLinebreakRule() {
 			super("\\\\\\\\");
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
 			ForcedLinebreak node = new ForcedLinebreak();
 			parent.addChild(node);
@@ -422,7 +422,7 @@ public class PlainWikiParser {
 		public EscapeRule() {
 			super(REGEX);
 		}
-		public void matched(String[] group, PlainWikiParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
 			Unformatted node = new Unformatted(group[1]);
 			parent.addChild(node);

@@ -1,31 +1,31 @@
 package cylon.creole;
 
-import cylon.dom.DomNode;
+import cylon.dom.Node;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class DomTrunk {
-	private Deque<DomNode> trunk = new ArrayDeque<DomNode>();
+	private Deque<Node> trunk = new ArrayDeque<Node>();
 
-	public void descend(DomNode node) {
+	public void descend(Node node) {
 		trunk.push(node);
 	}
 	
-	public DomNode ascend() {
+	public Node ascend() {
 		return trunk.pop();
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends DomNode> T ascendAndAssert(T node) {
-		DomNode e = trunk.pop();
+	public <T extends Node> T ascendAndAssert(T node) {
+		Node e = trunk.pop();
 		assertNode(node, e);
 		return (T) e;
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends DomNode> T ascendAndAssert(Class<T> type) {
-		DomNode e = trunk.pop();
+	public <T extends Node> T ascendAndAssert(Class<T> type) {
+		Node e = trunk.pop();
 		assertNode(type, e);
 		return (T) e;
 	}
@@ -34,7 +34,7 @@ public class DomTrunk {
 	 * exclusive
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends DomNode> T ascendUntil(Class<T> type) {
+	public <T extends Node> T ascendUntil(Class<T> type) {
 		while (!trunk.isEmpty()) {
 			if (is(type)) {
 				return (T)trunk.peek();
@@ -48,7 +48,7 @@ public class DomTrunk {
 	 * inclusive
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends DomNode> T ascendTo(Class<T> type) {
+	public <T extends Node> T ascendTo(Class<T> type) {
 		while (!trunk.isEmpty()) {
 			if (is(type)) {
 				return (T)trunk.pop();
@@ -62,7 +62,7 @@ public class DomTrunk {
 	 * inclusive
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends DomNode> T ascendTo(T node) {
+	public <T extends Node> T ascendTo(T node) {
 		while (!trunk.isEmpty()) {
 			if (trunk.peek() == node) {
 				return (T)trunk.pop();
@@ -72,12 +72,12 @@ public class DomTrunk {
 		throw new IllegalStateException("");
 	}
 
-	public boolean is(Class<? extends DomNode> type) {
+	public boolean is(Class<? extends Node> type) {
 		return type.isAssignableFrom(trunk.peek().getClass());
 	}
 
-	public boolean isDescendedFrom(Class<? extends DomNode> type) {
-		for (DomNode each: trunk) {
+	public boolean isDescendedFrom(Class<? extends Node> type) {
+		for (Node each: trunk) {
 			if (type.isAssignableFrom(each.getClass())) {
 				return true;
 			}

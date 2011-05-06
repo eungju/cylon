@@ -29,7 +29,7 @@ import cylon.dom.Underline;
 import cylon.dom.Unformatted;
 import cylon.dom.UnorderedList;
 
-public class WikiMarkupRenderer extends WikiMarkupBuilder implements DomVisitor {
+public class CreoleMarkupRenderer extends CreoleMarkupBuilder implements DomVisitor {
 	private StringBuilder listBullets = new StringBuilder();
 	
 	public String asString() {

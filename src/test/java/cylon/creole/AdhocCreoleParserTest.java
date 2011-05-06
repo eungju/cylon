@@ -7,11 +7,11 @@ import org.junit.Test;
 
 import cylon.dom.DomBuilder;
 
-public class PlainWikiParserTest extends DomBuilder implements WikiParserSpec {
-	PlainWikiParser parser;
+public class AdhocCreoleParserTest extends DomBuilder implements WikiParserSpec {
+	AdhocCreoleParser parser;
 
 	@Before public void beforeEach() {
-		parser = new PlainWikiParser();
+		parser = new AdhocCreoleParser();
 	}
 
 	@Test public void documentCanBeEmpty() {

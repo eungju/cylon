@@ -6,11 +6,11 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-public class PracticalPlainWikiParserTest {
-	PlainWikiParser parser;
+public class AdhocCreoleParserPracticalTest {
+	AdhocCreoleParser parser;
 
 	@Before public void beforeEach() {
-		parser = new PlainWikiParser();
+		parser = new AdhocCreoleParser();
 	}
 
 	String loadContent(String fileName) {

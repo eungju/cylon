@@ -6,7 +6,7 @@ import java.util.List;
 
 import cylon.support.ObjectSupport;
 
-public abstract class BlockComposite extends ObjectSupport implements DomNode {
+public abstract class BlockComposite extends ObjectSupport implements Node {
 	List<Block> children;
 
 	BlockComposite(Block...children) {

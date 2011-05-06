@@ -1,4 +1,4 @@
 package cylon.dom;
 
-public interface Block extends DomNode {
+public interface Block extends Node {
 }

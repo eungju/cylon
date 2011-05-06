@@ -1,17 +1,16 @@
 package cylon.creole;
 
-import static org.junit.Assert.*;
-
-import cylon.creole.WikiMarkupBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.*;
 
-public class WikiMarkupBuilderTest {
-	private WikiMarkupBuilder builder;
+
+public class CreoleMarkupBuilderTest {
+	private CreoleMarkupBuilder builder;
 
 	@Before public void beforeEach() {
-		builder = new WikiMarkupBuilder();
+		builder = new CreoleMarkupBuilder();
 	}
 
 	@Test public void isOnEmptyLine() {

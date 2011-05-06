@@ -1,26 +1,24 @@
 package cylon.creole;
 
-import static org.junit.Assert.*;
-
-import cylon.creole.WikiMarkupRenderer;
+import cylon.dom.DomBuilder;
+import cylon.dom.Node;
 import org.junit.Before;
 import org.junit.Test;
 
-import cylon.dom.DomBuilder;
-import cylon.dom.DomNode;
+import static org.junit.Assert.*;
 
 
-public class WikiMarkupRendererTest extends DomBuilder {
-	private WikiMarkupRenderer visitor;
+public class CreoleMarkupRendererTest extends DomBuilder {
+	private CreoleMarkupRenderer visitor;
 
-	String markup(DomNode root) {
-		WikiMarkupRenderer v = new WikiMarkupRenderer();
+	String markup(Node root) {
+		CreoleMarkupRenderer v = new CreoleMarkupRenderer();
 		root.accept(v);
 		return v.asString();
 	}
 
 	@Before public void beforeEach() {
-		visitor = new WikiMarkupRenderer();
+		visitor = new CreoleMarkupRenderer();
 	}
 
 	@Test public void document() {

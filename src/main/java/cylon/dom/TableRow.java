@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import cylon.support.ObjectSupport;
 
-public class TableRow extends ObjectSupport implements DomNode {
+public class TableRow extends ObjectSupport implements Node {
 	private ArrayList<TableCell> children;
 
 	public TableRow(TableCell...children) {
