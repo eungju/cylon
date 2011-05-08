@@ -1,10 +1,11 @@
 package cylon.creole;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class AdhocCreoleParserPracticalTest {
 	AdhocCreoleParser parser;
@@ -15,7 +16,14 @@ public class AdhocCreoleParserPracticalTest {
 
 	String loadContent(String fileName) {
 		try {
-			return IOUtils.toString(getClass().getClassLoader().getResourceAsStream(getClass().getPackage().getName().replaceAll("\\.", "/") + "/" + fileName));
+            InputStream input = getClass().getClassLoader().getResourceAsStream(getClass().getPackage().getName().replaceAll("\\.", "/") + "/" + fileName);
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            byte[] buffer = new byte[4096];
+            int n;
+            while ((n = input.read(buffer)) != -1) {
+                output.write(buffer, 0, n);
+            }
+            return new String(output.toByteArray());
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Cannot load ", e);
 		}
