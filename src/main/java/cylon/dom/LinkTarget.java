@@ -1,14 +1,11 @@
 package cylon.dom;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import cylon.support.ObjectSupport;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LinkTarget extends ObjectSupport {
-	private final Log log = LogFactory.getLog(getClass());
     private static final String WIKI_ID_REGEXP = "[a-z0-9][a-z0-9_]{2,19}";
     private static final String PAGE_NAME_REGEXP = "[^\"#$%*+\\./:;@\\[\\\\\\]^`{|}~]+";
 	/**
@@ -40,7 +37,6 @@ public class LinkTarget extends ObjectSupport {
 			pageName = matcher.group(2);
 		} else {
 			url = target;
-			log.warn("Invalid link target: " + target);
 		}
 	}
 	
