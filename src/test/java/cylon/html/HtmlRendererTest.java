@@ -181,21 +181,6 @@ public class HtmlRendererTest extends DomBuilder {
 		assertEquals("<pre>&lt;a&gt;</pre>", visitor.asString());
 	}
 
-	@Test public void quotation() {
-		quotation(t("a")).accept(visitor);
-		assertEquals("<blockquote><p>a</p></blockquote>", visitor.asString());
-	}
-
-	@Test public void note() {
-		note(t("a")).accept(visitor);
-		assertEquals("<div class=\"importance\"><p>a</p></div>", visitor.asString());
-	}
-
-	@Test public void tip() {
-		tip(t("a")).accept(visitor);
-		assertEquals("<div class=\"tip\"><p>a</p></div>", visitor.asString());
-	}
-
 	@Test public void code() {
 		code("<a>").accept(visitor);
 		assertEquals("<code>&lt;a&gt;</code>", visitor.asString());

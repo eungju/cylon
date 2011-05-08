@@ -82,7 +82,6 @@ public class CreoleMarkupRendererTest extends DomBuilder {
 		assertEquals("a~,,,b,,\n\n", markup(p(t("a,"), sub("b"))));
 		assertEquals("a~---b--\n\n", markup(p(t("a-"), s("b"))));
 		assertEquals("a~___b__\n\n", markup(p(t("a_"), u("b"))));
-		assertEquals("a~```b``\n\n", markup(p(t("a`"), citation(t("b")))));
 		assertEquals("a~\\\\\\\n\n", markup(p(t("a\\"), br())));
 		assertEquals("a~[[[b]]\n\n", markup(p(t("a["), link("b"))));
 		assertEquals("a~{{{http://b}}\n\n", markup(p(t("a{"), image("http://b"))));
@@ -186,16 +185,6 @@ public class CreoleMarkupRendererTest extends DomBuilder {
 		assertEquals("{{attachment:filename.ext|alt=alt}}", visitor.asString());
 	}
 
-	@Test public void citation() {
-		citation(t("a")).accept(visitor);
-		assertEquals("``a``", visitor.asString());
-	}
-
-	@Test public void citationCanHaveLink() {
-		citation(link("uri", t("a"))).accept(visitor);
-		assertEquals("``[[uri|a]]``", visitor.asString());
-	}
-	
 	@Test public void forcedLineBreakMarkupIsTwoBackslashes() {
 		p(t("a"), br(), t("b")).accept(visitor);
 		assertEquals("a\\\\b\n\n", visitor.asString());
@@ -248,31 +237,6 @@ public class CreoleMarkupRendererTest extends DomBuilder {
 		assertEquals("*//a//\n", visitor.asString());
 	}
 	
-	@Test public void quotationHasTexts() {
-		quotation(t("text\n"), b("bold"), t("\n")).accept(visitor);
-		assertEquals("[[[quotation\ntext\n**bold**\n]]]\n", visitor.asString());
-	}
-
-	@Test public void note() {
-		note(t("a\n")).accept(visitor);
-		assertEquals("[[[note\na\n]]]\n", visitor.asString());
-	}
-
-	@Test public void noteCanHaveTexts() {
-		note(b("a"), i("b"), t("c")).accept(visitor);
-		assertEquals("[[[note\n**a**//b//c\n]]]\n", visitor.asString());
-	}
-
-	@Test public void documentCanHaveTip() {
-		tip(t("a\n")).accept(visitor);
-		assertEquals("[[[tip\na\n]]]\n", visitor.asString());
-	}
-
-	@Test public void tipCanHaveTexts() {
-		tip(b("a"), i("b"), t("c")).accept(visitor);
-		assertEquals("[[[tip\n**a**//b//c\n]]]\n", visitor.asString());
-	}
-
 	@Test public void linkWithoutDescription() {
 		link("page name").accept(visitor);
 		assertEquals("[[page name]]", visitor.asString());

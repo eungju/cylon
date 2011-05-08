@@ -61,18 +61,6 @@ public class DomBuilder {
 		return new Preformatted(interpreter, text);
 	}
 	
-	protected Quotation quotation(Text...children) {
-		return new Quotation(children);
-	}
-	
-	protected Note note(Text... children) {
-		return new Note(children);
-	}
-	
-	protected Tip tip(Text... children) {
-		return new Tip(children);
-	}
-
 	protected Paragraph p(Text...children) {
 		return new Paragraph(0, children);
 	}
@@ -99,14 +87,6 @@ public class DomBuilder {
 	
 	protected Image image(String uri) {
 		return new Image(uri, null);
-	}
-	
-	protected Citation citation(Text explanation) {
-		return new Citation(explanation);
-	}
-	
-	protected Citation citation(Text explanation, String label) {
-		return new Citation(explanation, label);
 	}
 	
 	protected Code code(String text) {

@@ -1,7 +1,6 @@
 package cylon.creole;
 
 import cylon.dom.Bold;
-import cylon.dom.Citation;
 import cylon.dom.Code;
 import cylon.dom.Document;
 import cylon.dom.ForcedLinebreak;
@@ -12,11 +11,9 @@ import cylon.dom.Italic;
 import cylon.dom.ItemList;
 import cylon.dom.Link;
 import cylon.dom.ListItem;
-import cylon.dom.Note;
 import cylon.dom.OrderedList;
 import cylon.dom.Paragraph;
 import cylon.dom.Preformatted;
-import cylon.dom.Quotation;
 import cylon.dom.Strike;
 import cylon.dom.Subscript;
 import cylon.dom.Superscript;
@@ -25,7 +22,6 @@ import cylon.dom.TableCell;
 import cylon.dom.TableRow;
 import cylon.dom.Text;
 import cylon.dom.TextComposite;
-import cylon.dom.Tip;
 import cylon.dom.Underline;
 import cylon.dom.Unformatted;
 import cylon.dom.UnorderedList;
@@ -146,7 +142,6 @@ public class AdhocCreoleParser {
 		final Pattern tableCellPattern = Pattern.compile("\\|(=)?((?:"
 				+ LinkRule.REGEX + "|"
 				+ ImageRule.REGEX + "|"
-				+ CitationRule.REGEX + "|"
 				+ CodeRule.REGEX + "|"
 				+ EscapeRule.REGEX + "|"
 				+ "[^|])+)", BlockRule.PATTERN_FLAGS);
@@ -189,48 +184,6 @@ public class AdhocCreoleParser {
 		}
 	}
 	
-	static class QuotationRule extends BlockRule {
-		public QuotationRule() {
-			super("^\\[\\[\\[quotation\\p{Blank}*" + NEWLINE + "((?s:.)*?)^\\]\\]\\]\\p{Blank}*$");
-		}
-		public void matched(String[] group, AdhocCreoleParser parser) {
-			Document parent = parser.cursor.ascendUntil(Document.class);
-			Quotation node = new Quotation();
-			parent.addChild(node);
-			parser.cursor.descend(node);
-			parser.parseInline(group[1]);
-			parser.cursor.ascendTo(node);
-		}
-	}	
-
-	static class NoteRule extends BlockRule {
-		public NoteRule() {
-			super("^\\[\\[\\[note\\p{Blank}*" + NEWLINE + "((?s:.)*?)^\\]\\]\\]\\p{Blank}*$");
-		}
-		public void matched(String[] group, AdhocCreoleParser parser) {
-			Document parent = parser.cursor.ascendUntil(Document.class);
-			Note node = new Note();
-			parent.addChild(node);
-			parser.cursor.descend(node);
-			parser.parseInline(group[1]);
-			parser.cursor.ascendTo(node);
-		}
-	}	
-
-	static class TipRule extends BlockRule {
-		public TipRule() {
-			super("^\\[\\[\\[tip\\p{Blank}*" + NEWLINE + "((?s:.)*?)^\\]\\]\\]\\p{Blank}*$");
-		}
-		public void matched(String[] group, AdhocCreoleParser parser) {
-			Document parent = parser.cursor.ascendUntil(Document.class);
-			Tip node = new Tip();
-			parent.addChild(node);
-			parser.cursor.descend(node);
-			parser.parseInline(group[1]);
-			parser.cursor.ascendTo(node);
-		}
-	}	
-
 	static class ParagraphRule extends BlockRule {
 		public ParagraphRule() {
 			super("^(>+)?(.+)");
@@ -332,25 +285,6 @@ public class AdhocCreoleParser {
 		}
 	}
 
-	static class CitationRule extends InlineRule {
-		static final String REGEX = "``(?:" + LinkRule.REGEX + "|(.+?))\\s*(?:\\|\\s*(\\w+?))?``";
-		
-		public CitationRule() {
-			super(REGEX);
-		}
-		public void matched(String[] group, AdhocCreoleParser parser) {
-			TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
-			Text explanation = null;
-			if (group[1] == null) {
-				explanation = new Unformatted(group[3]);
-			} else {
-				explanation = group[2] == null ? new Link(group[1]) : new Link(group[1], new Unformatted(group[2]));
-			}
-			Citation node = new Citation(explanation, group[4]);
-			parent.addChild(node);
-		}
-	}
-
 	static class BoldRule extends InlineRule {
 		public BoldRule() {
 			super("\\*\\*");
@@ -438,9 +372,6 @@ public class AdhocCreoleParser {
 					, new PreformattedRule()
 					, new ListRule()
 					, new TableRule()
-					, new QuotationRule()
-					, new NoteRule()
-					, new TipRule()
 					, new ParagraphRule()
 			}
 			, BlockRule.PATTERN_FLAGS
@@ -451,7 +382,6 @@ public class AdhocCreoleParser {
 					new LinkRule()
 					, new CodeRule()
 					, new ImageRule()
-					, new CitationRule()
 					, new BoldRule()
 					, new ItalicRule()
 					, new UnderlineRule()

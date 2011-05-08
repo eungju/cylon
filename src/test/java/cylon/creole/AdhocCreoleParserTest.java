@@ -1,11 +1,10 @@
 package cylon.creole;
 
-import static org.junit.Assert.*;
-
+import cylon.dom.DomBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
-import cylon.dom.DomBuilder;
+import static org.junit.Assert.*;
 
 public class AdhocCreoleParserTest extends DomBuilder implements WikiParserSpec {
 	AdhocCreoleParser parser;
@@ -216,26 +215,6 @@ public class AdhocCreoleParserTest extends DomBuilder implements WikiParserSpec 
 		assertEquals(document(pre("syntax java", "a\n")), parser.document("{{{#!syntax java\na\n}}}"));
 	}
 	
-	@Test public void quotationHasTexts() {
-		assertEquals(document(quotation(t("text\n"), b("bold"), t("\n"))), parser.document("[[[quotation\ntext\n**bold**\n]]]"));
-	}
-
-	@Test public void documentCanHaveNote() {
-		assertEquals(document(note(t("a\n"))), parser.document("[[[note\na\n]]]"));
-	}
-
-	@Test public void noteCanHaveTexts() {
-		assertEquals(document(note(b("a"), t("b\n") )), parser.document("[[[note\n**a**b\n]]]"));
-	}
-
-	@Test public void documentCanHaveTip() {
-		assertEquals(document(tip(t("a\n"))), parser.document("[[[tip\na\n]]]"));
-	}
-
-	@Test public void tipCanHaveTexts() {
-		assertEquals(document(tip(i("aaaa"), t("a\n"))), parser.document("[[[tip\n//aaaa//a\n]]]"));
-	}
-
 	/** inline element test */
 	@Test public void boldMarkupIsTwoStars() {
 		assertEquals(p(b("a")), parser.formattedText("**a**"));
@@ -334,34 +313,6 @@ public class AdhocCreoleParserTest extends DomBuilder implements WikiParserSpec 
 		assertEquals(p(image("uri", null, "left")), parser.formattedText("{{uri|align=left}}"));
 	}
 	
-	@Test public void citation() {
-		assertEquals(p(citation(t("Source"))), parser.formattedText("``Source``"));
-	}
-
-	@Test public void citationCanHaveLabel() {
-		assertEquals(p(citation(t("Source"), "label")), parser.formattedText("``Source|label``"));
-	}
-
-	@Test public void citationCanHaveLabelWithWhiteSapce() {
-		assertEquals(p(citation(t("Source"), "label")), parser.formattedText("``Source | label``"));
-	}
-	
-	@Test public void citationCanHaveLink() {
-		assertEquals(p(citation(link("uri"))), parser.formattedText("``[[uri]]``"));
-	}
-	
-	@Test public void citationCanHaveLinkWithDescription() {
-		assertEquals(p(citation(link("uri", t("desc")))), parser.formattedText("``[[uri|desc]]``"));
-	}	
-
-	@Test public void citationCanHaveLinkWithDescriptionAndWhiteSpace() {
-		assertEquals(p(citation(link("uri", t("desc")))), parser.formattedText("``[[uri | desc]]``"));
-	}
-
-	@Test public void citationCanHaveLinkAndLabel() {
-		assertEquals(p(citation(link("uri", t("desc")), "label")), parser.formattedText("``[[uri|desc]]|label``"));
-	}
-
 	@Test public void paragraphsContainsFormattedText() {
 		assertEquals(document(p(t("a"), b("b"), i("c"))), parser.document("a**b**//c//"));
 	}

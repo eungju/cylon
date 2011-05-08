@@ -1,7 +1,6 @@
 package cylon.html;
 
 import cylon.dom.Bold;
-import cylon.dom.Citation;
 import cylon.dom.Code;
 import cylon.dom.Document;
 import cylon.dom.DomVisitor;
@@ -13,18 +12,15 @@ import cylon.dom.Italic;
 import cylon.dom.Link;
 import cylon.dom.LinkTarget;
 import cylon.dom.ListItem;
-import cylon.dom.Note;
 import cylon.dom.OrderedList;
 import cylon.dom.Paragraph;
 import cylon.dom.Preformatted;
-import cylon.dom.Quotation;
 import cylon.dom.Strike;
 import cylon.dom.Subscript;
 import cylon.dom.Superscript;
 import cylon.dom.Table;
 import cylon.dom.TableCell;
 import cylon.dom.TableRow;
-import cylon.dom.Tip;
 import cylon.dom.Underline;
 import cylon.dom.Unformatted;
 import cylon.dom.UnorderedList;
@@ -185,30 +181,6 @@ public class HtmlRenderer implements DomVisitor {
 		buffer.append("</pre>");
 	}
 
-	public void visitEnter(Quotation node) {
-		buffer.append("<blockquote><p>");
-	}
-
-	public void visitLeave(Quotation node) {
-		buffer.append("</p></blockquote>");
-	}
-
-	public void visitEnter(Note node) {
-		buffer.append("<div class=\"importance\"><p>");
-	}
-
-	public void visitLeave(Note node) {
-		buffer.append("</p></div>");
-	}
-
-	public void visitEnter(Tip node) {
-		buffer.append("<div class=\"tip\"><p>");
-	}
-
-	public void visitLeave(Tip node) {
-		buffer.append("</p></div>");
-	}
-
 	public void visit(Code node) {
 		buffer.append("<code>");
 		buffer.append(escapeHtml(node.getText()));
@@ -307,14 +279,6 @@ public class HtmlRenderer implements DomVisitor {
 		}
 		buffer.append(" />");
 	}
-
-    public void visitEnter(Citation node) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void visitLeave(Citation node) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
 
     public static String escapeHtml(String str) {
         return str.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quot;");

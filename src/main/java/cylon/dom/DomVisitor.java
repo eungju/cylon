@@ -22,16 +22,7 @@ public interface DomVisitor {
 	
 	void visit(Preformatted node);
 	
-	void visitEnter(Quotation node);
-	void visitLeave(Quotation node);
-	
-	void visitEnter(Note note);
-	void visitLeave(Note note);
-	
-	void visitEnter(Tip tip);
-	void visitLeave(Tip tip);
-
-	void visitEnter(Table node);	
+	void visitEnter(Table node);
 	void visitLeave(Table node);
 
 	void visitEnter(TableRow node);	
@@ -49,9 +40,6 @@ public interface DomVisitor {
 	void visitLeave(Link node);
 
 	void visit(Image node);
-	
-	void visitEnter(Citation node);
-	void visitLeave(Citation node);
 	
 	void visit(ForcedLinebreak node);
 

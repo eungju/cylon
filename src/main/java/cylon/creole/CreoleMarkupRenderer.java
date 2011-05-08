@@ -1,7 +1,6 @@
 package cylon.creole;
 
 import cylon.dom.Bold;
-import cylon.dom.Citation;
 import cylon.dom.Code;
 import cylon.dom.Document;
 import cylon.dom.DomVisitor;
@@ -13,18 +12,15 @@ import cylon.dom.Italic;
 import cylon.dom.Link;
 import cylon.dom.LinkTarget;
 import cylon.dom.ListItem;
-import cylon.dom.Note;
 import cylon.dom.OrderedList;
 import cylon.dom.Paragraph;
 import cylon.dom.Preformatted;
-import cylon.dom.Quotation;
 import cylon.dom.Strike;
 import cylon.dom.Subscript;
 import cylon.dom.Superscript;
 import cylon.dom.Table;
 import cylon.dom.TableCell;
 import cylon.dom.TableRow;
-import cylon.dom.Tip;
 import cylon.dom.Underline;
 import cylon.dom.Unformatted;
 import cylon.dom.UnorderedList;
@@ -126,30 +122,6 @@ public class CreoleMarkupRenderer extends CreoleMarkupBuilder implements DomVisi
 		newline();
 	}
 
-	public void visitEnter(Quotation node) {
-		newline().emit("[[[quotation").newline();
-	}
-	
-	public void visitLeave(Quotation node) {
-		newline().emit("]]]").newline();
-	}
-
-	public void visitEnter(Note note) {
-		newline().emit("[[[note").newline();
-	}
-	
-	public void visitLeave(Note note) {
-		newline().emit("]]]").newline();
-	}
-
-	public void visitEnter(Tip tip) {
-		newline().emit("[[[tip").newline();
-	}
-
-	public void visitLeave(Tip tip) {
-		newline().emit("]]]").newline();
-	}
-	
 	public void visitEnter(Italic node) {
 		italic();
 	}
@@ -200,14 +172,6 @@ public class CreoleMarkupRenderer extends CreoleMarkupBuilder implements DomVisi
 
 	public void visit(Unformatted node) {
 		unformatted(node.getText());
-	}
-
-	public void visitEnter(Citation node) {
-		citation();
-	}
-	
-	public void visitLeave(Citation node) {
-		citation();
 	}
 
 	public void visit(ForcedLinebreak node) {
