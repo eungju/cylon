@@ -10,7 +10,6 @@ import cylon.dom.HorizontalLine;
 import cylon.dom.Image;
 import cylon.dom.Italic;
 import cylon.dom.Link;
-import cylon.dom.LinkTarget;
 import cylon.dom.ListItem;
 import cylon.dom.OrderedList;
 import cylon.dom.Paragraph;
@@ -184,7 +183,7 @@ public class CreoleMarkupRenderer extends CreoleMarkupBuilder implements DomVisi
 	
 	public void visitEnter(Link node) {
 		markup("[[");
-		emit(node.getTarget().getTarget());
+		emit(node.getUri());
 		if (node.hasDescription()) {
 			emit("|");
 		}
@@ -195,9 +194,8 @@ public class CreoleMarkupRenderer extends CreoleMarkupBuilder implements DomVisi
 	}	
 
 	public void visit(Image node) {
-		LinkTarget target = node.getTarget();
 		markup("{{");
-		emit(target.getTarget());
+		emit(node.getUri());
 		if(node.hasAlternative()) {
 			emit("|alt=").emit(node.getAlternative());
 		}

@@ -10,7 +10,6 @@ import cylon.dom.HorizontalLine;
 import cylon.dom.Image;
 import cylon.dom.Italic;
 import cylon.dom.Link;
-import cylon.dom.LinkTarget;
 import cylon.dom.ListItem;
 import cylon.dom.OrderedList;
 import cylon.dom.Paragraph;
@@ -24,16 +23,10 @@ import cylon.dom.TableRow;
 import cylon.dom.Underline;
 import cylon.dom.Unformatted;
 import cylon.dom.UnorderedList;
-import cylon.dom.WikiAdaptor;
 
 public class HtmlRenderer implements DomVisitor {
-	protected WikiAdaptor adaptor;
 	protected StringBuilder buffer = new StringBuilder();
 
-	public HtmlRenderer(WikiAdaptor adaptor) {
-		this.adaptor = adaptor;
-	}
-	
 	public String asString() {
 		return buffer.toString();
 	}
@@ -192,50 +185,11 @@ public class HtmlRenderer implements DomVisitor {
 	}
 
 	public void visitEnter(Link node) {
-		String href = null;
-		boolean doNotLink = false;
-		String cssClass = "";
-		LinkTarget target = node.getTarget();
-		if (target.isUrl()) {
-			cssClass += " url";
-			href = target.getUrl();
-			doNotLink = !target.isSafeUrl();
-		} else if (target.isPage()) {
-			cssClass += " page";
-			if (target.isNeighborWiki()) {
-				href = adaptor.pageUrl(target.getNeighborWikiId(), target.getPageName());
-			} else {
-				if (adaptor.isPageExist(target.getPageName())) {
-					href = adaptor.pageUrl(target.getPageName());
-				} else {
-					href = adaptor.pageEditUrl(target.getPageName());
-					cssClass += " broken";
-				}
-			}
-		} else if (target.isAttachment()) {
-			cssClass += " attachment";
-			if (adaptor.hasAttachmentOfName(target.getAttachmentName())) {
-				href = adaptor.attachmentUrl(target.getAttachmentName());
-			} else {
-				href = target.getTarget();
-				doNotLink = true;
-				cssClass += " broken";
-			}
-		}
-		
 		buffer.append("<a");
-		if (doNotLink) {
-			buffer.append(" title=\"").append(escapeHtml(href)).append("\"");
-		} else {
-			buffer.append(" href=\"").append(escapeHtml(href)).append("\"");
-		}
-		buffer.append(" class=\"").append(cssClass.trim()).append("\"");
-		if (target.isUrl()) {
-			buffer.append(" target=\"_blank\"");
-		}
+		buffer.append(" href=\"").append(escapeHtml(node.getUri())).append("\"");
 		buffer.append(">");
 		if (!node.hasDescription()) {
-			buffer.append(escapeHtml(target.getTarget()));
+			buffer.append(escapeHtml(node.getUri()));
 		}
 	}
 
@@ -244,36 +198,8 @@ public class HtmlRenderer implements DomVisitor {
 	}
 
 	public void visit(Image node) {
-		LinkTarget target = node.getTarget();
-		String src = null;
-		boolean doNotLink = false;
-		String cssClass = "";
-		if (target.isAttachment()) {
-			cssClass += " attachment";
-			if (adaptor.hasAttachmentOfName(target.getAttachmentName())) {
-				src = adaptor.attachmentUrl(target.getAttachmentName());
-			} else {
-				src = target.getTarget();
-				doNotLink = true;
-				cssClass += " broken";
-			}
-		} else if (target.isUrl()) {
-			src = target.getUrl();
-		}
-		
-		if (node.hasAlign()) {
-			cssClass += "f_" + node.getAlign();
-		}
-		
 		buffer.append("<img");
-		if (doNotLink) {
-			buffer.append(" title=\"").append(escapeHtml(src)).append("\"");
-		} else {
-			buffer.append(" src=\"").append(escapeHtml(src)).append("\"");
-		}
-		if (cssClass.trim().length() > 0) {
-			buffer.append(" class=\"").append(cssClass.trim()).append("\"");
-		}
+		buffer.append(" src=\"").append(escapeHtml(node.getUri())).append("\"");
 		if (node.hasAlternative()) {
 			 buffer.append(" alt=\"").append(escapeHtml(node.getAlternative())).append("\"");
 		}

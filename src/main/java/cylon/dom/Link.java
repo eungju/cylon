@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Link extends TextComposite implements Text {
-	private LinkTarget target;
+	private String uri;
 	
-	public Link(String target, Text...children) {
+	public Link(String uri, Text...children) {
 		super(children);
-		this.target = new LinkTarget(target);
+		this.uri = uri;
 	}
 
 	public void accept(DomVisitor visitor) {
@@ -19,8 +19,8 @@ public class Link extends TextComposite implements Text {
 		visitor.visitLeave(this);
 	}
 
-	public LinkTarget getTarget() {
-		return target;
+	public String getUri() {
+		return uri;
 	}
 	
 	public boolean hasDescription() {
@@ -29,7 +29,7 @@ public class Link extends TextComposite implements Text {
 
 	public String toString() {
 		List<Object> temp = new ArrayList<Object>();
-		temp.add(target);
+		temp.add(uri);
 		temp.addAll(children);
 		return DomUtils.toString(this, temp.toArray());
 	}

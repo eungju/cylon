@@ -2,7 +2,6 @@ package cylon.html;
 
 import cylon.dom.DomBuilder;
 import cylon.dom.Text;
-import cylon.dom.WikiAdaptor;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -17,11 +16,9 @@ import static org.junit.Assert.*;
 public class HtmlRendererTest extends DomBuilder {
 	private Mockery mockery = new JUnit4Mockery();
 	private HtmlRenderer visitor;
-	private WikiAdaptor adaptor;
 
 	@Before public void beforeEach() {
-		adaptor = mockery.mock(WikiAdaptor.class);
-		visitor = new HtmlRenderer(adaptor);
+		visitor = new HtmlRenderer();
 	}
 
 	@Test public void document() {
@@ -98,19 +95,13 @@ public class HtmlRendererTest extends DomBuilder {
 	@Test public void urlLink() {
 		final String url = "http://naver.com/w?x=y&z";
 		link(url).accept(visitor);
-		assertEquals("<a href=\"" + escapeHtml(url) + "\" class=\"url\" target=\"_blank\">" + escapeHtml(url) +  "</a>", visitor.asString());
-	}
-
-	@Test public void urlLinkDangerous() {
-		final String url = "mms://naver.com/w?x=y&z";
-		link(url).accept(visitor);
-		assertEquals("<a title=\"" + escapeHtml(url) + "\" class=\"url\" target=\"_blank\">" + escapeHtml(url) +  "</a>", visitor.asString());
+		assertEquals("<a href=\"" + escapeHtml(url) + "\">" + escapeHtml(url) +  "</a>", visitor.asString());
 	}
 
 	@Test public void urlLinkWithDescription() {
 		final String url = "http://naver.com/w?x=y&z";
 		link(url, t("D")).accept(visitor);
-		assertEquals("<a href=\"" + escapeHtml(url) + "\" class=\"url\" target=\"_blank\">D</a>", visitor.asString());
+		assertEquals("<a href=\"" + escapeHtml(url) + "\">D</a>", visitor.asString());
 	}
 		
 	@Test public void imageUrlTarget() {
@@ -121,11 +112,6 @@ public class HtmlRendererTest extends DomBuilder {
 	@Test public void imageWithAlt() {
 		image("http://a", "b").accept(visitor);
 		assertEquals("<img src=\"http://a\" alt=\"b\" />", visitor.asString());
-	}
-
-	@Test public void imageWithAlign() {
-		image("http://localhost/x.png", "b", "right").accept(visitor);
-		assertEquals("<img src=\"http://localhost/x.png\" class=\"f_right\" alt=\"b\" />", visitor.asString());
 	}
 
 	@Test public void unorderedList() {
@@ -144,7 +130,7 @@ public class HtmlRendererTest extends DomBuilder {
 	}
 
 	@Test public void listListItem() {
-		li(new Text[] {}, ol()).accept(visitor);
+		li(new Text[]{}, ol()).accept(visitor);
 		assertEquals("<li><ol></ol></li>", visitor.asString());
 	}
 

@@ -3,7 +3,7 @@ package cylon.dom;
 import cylon.support.ObjectSupport;
 
 public class Image extends ObjectSupport implements Text {
-	private LinkTarget uri;
+	private String uri;
 	private String alternative;
 	private String align;
 
@@ -12,12 +12,12 @@ public class Image extends ObjectSupport implements Text {
 	}
 	
 	public Image(String uri, String alternative, String align) {
-		this.uri = new LinkTarget(uri);
+		this.uri = uri;
 		this.alternative = alternative;
 		this.align = align;
 	}
 	
-	public LinkTarget getTarget() {
+	public String getUri() {
 		return uri;
 	}
 	
