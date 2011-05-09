@@ -1,6 +1,6 @@
 syntax: glob
 
-uri
+target
 
 .classpath
 .project
