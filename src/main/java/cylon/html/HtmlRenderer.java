@@ -26,10 +26,25 @@ import cylon.dom.UnorderedList;
 
 public class HtmlRenderer implements DomVisitor {
 	protected StringBuilder buffer = new StringBuilder();
+    private final boolean indent;
+
+    public HtmlRenderer() {
+        this(false);
+    }
+
+    public HtmlRenderer(boolean indent) {
+        this.indent = indent;
+    }
 
 	public String asString() {
 		return buffer.toString();
 	}
+
+    private void newline() {
+        if (indent) {
+            buffer.append("\n");
+        }
+    }
 
 	public void visitEnter(Document node) {
 	}
@@ -41,10 +56,12 @@ public class HtmlRenderer implements DomVisitor {
         buffer.append("<h").append(node.getLevel()).append('>');
         buffer.append(escapeHtml(node.getTitle()));
         buffer.append("</h").append(node.getLevel()).append('>');
+        newline();
     }
 
     public void visit(HorizontalLine node) {
 		buffer.append("<hr />");
+        newline();
 	}
 
 	public void visitEnter(Paragraph node) {
@@ -57,6 +74,7 @@ public class HtmlRenderer implements DomVisitor {
 
 	public void visitLeave(Paragraph node) {
 		buffer.append("</p>");
+        newline();
 	}
 
 	public void visit(Unformatted node) {
@@ -81,18 +99,22 @@ public class HtmlRenderer implements DomVisitor {
 
 	public void visitEnter(Table node) {
 		buffer.append("<table class=\"table\" border=\"1\" cellspacing=\"0\">");
+        newline();
 	}
 
 	public void visitLeave(Table node) {
 		buffer.append("</table>");
+        newline();
 	}
 
 	public void visitEnter(TableRow node) {
 		buffer.append("<tr>");		
+        newline();
 	}
 
 	public void visitLeave(TableRow node) {
 		buffer.append("</tr>");
+        newline();
 	}
 
 	public void visitEnter(TableCell node) {
@@ -107,18 +129,22 @@ public class HtmlRenderer implements DomVisitor {
 
 	public void visitEnter(UnorderedList node) {
 		buffer.append("<ul>");
+        newline();
 	}
 
 	public void visitLeave(UnorderedList node) {
 		buffer.append("</ul>");
+        newline();
 	}
 
 	public void visitEnter(OrderedList node) {
 		buffer.append("<ol>");
+        newline();
 	}
 
 	public void visitLeave(OrderedList node) {
 		buffer.append("</ol>");
+        newline();
 	}
 
 	public void visitEnter(ListItem node) {
@@ -127,6 +153,7 @@ public class HtmlRenderer implements DomVisitor {
 
 	public void visitLeave(ListItem node) {
 		buffer.append("</li>");
+        newline();
 	}
 
 	public void visitEnter(Superscript node) {
@@ -172,6 +199,7 @@ public class HtmlRenderer implements DomVisitor {
 		buffer.append('>');
 		buffer.append(escapeHtml(node.getText()));
 		buffer.append("</pre>");
+        newline();
 	}
 
 	public void visit(Code node) {
@@ -182,6 +210,7 @@ public class HtmlRenderer implements DomVisitor {
 
 	public void visit(ForcedLinebreak node) {
 		buffer.append("<br />");
+        newline();
 	}
 
 	public void visitEnter(Link node) {
