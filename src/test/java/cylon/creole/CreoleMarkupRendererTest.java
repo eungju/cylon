@@ -175,11 +175,6 @@ public class CreoleMarkupRendererTest extends DomBuilder {
 		assertEquals("{{uri|alt=alt}}", visitor.asString());
 	}
 
-	@Test public void imageWithAlign() {
-		image("uri", null, "left").accept(visitor);
-		assertEquals("{{uri|align=left}}", visitor.asString());
-	}
-
 	@Test public void whenImageIsAttachment() {
 		image("attachment:filename.ext", "alt").accept(visitor);
 		assertEquals("{{attachment:filename.ext|alt=alt}}", visitor.asString());

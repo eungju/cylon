@@ -271,7 +271,7 @@ public class AdhocCreoleParser {
 		public void matched(String[] group, AdhocCreoleParser parser) {
 			TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
 			Map<String, String> options = options(group[2]);
-			Image node = new Image(group[1], options.get("alt"), options.get("align"));
+			Image node = new Image(group[1], options.get("alt"));
 			parent.addChild(node);
 		}
 		Map<String,String> options(String options) {

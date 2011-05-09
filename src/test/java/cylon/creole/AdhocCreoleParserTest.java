@@ -309,10 +309,6 @@ public class AdhocCreoleParserTest extends DomBuilder implements WikiParserSpec 
 		assertEquals(p(image("uri", "alt")), parser.formattedText("{{uri|alt=alt}}"));
 	}
 	
-	@Test public void imageWithAlign() {
-		assertEquals(p(image("uri", null, "left")), parser.formattedText("{{uri|align=left}}"));
-	}
-	
 	@Test public void paragraphsContainsFormattedText() {
 		assertEquals(document(p(t("a"), b("b"), i("c"))), parser.document("a**b**//c//"));
 	}

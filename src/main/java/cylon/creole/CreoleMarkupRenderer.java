@@ -199,9 +199,6 @@ public class CreoleMarkupRenderer extends CreoleMarkupBuilder implements DomVisi
 		if(node.hasAlternative()) {
 			emit("|alt=").emit(node.getAlternative());
 		}
-		if(node.hasAlign()) {
-			emit("|align=").emit(node.getAlign());
-		}
 		markup("}}");
 	}
 }

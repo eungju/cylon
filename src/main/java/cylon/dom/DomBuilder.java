@@ -77,14 +77,10 @@ public class DomBuilder {
 		return new Link(uri, children);
 	}
 
-	protected Image image(String uri, String alt, String align) {
-		return new Image(uri, alt, align);
-	}
-
 	protected Image image(String uri, String alt) {
 		return new Image(uri, alt);
 	}
-	
+
 	protected Image image(String uri) {
 		return new Image(uri, null);
 	}
