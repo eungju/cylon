@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class ParagraphTest extends DomBuilder {
+public class IndentedParagraphTest extends DomBuilder {
     private AdhocCreoleParser parser;
 
     @Before
@@ -15,7 +15,7 @@ public class ParagraphTest extends DomBuilder {
     }
 
     @Test
-    public void indentedParagraphsWhichBeginWithColons() {
+    public void beginWithColons() {
         assertEquals(
                 document(
                         p(t("This is a normal paragraph.")),
@@ -29,7 +29,7 @@ public class ParagraphTest extends DomBuilder {
     }
 
     @Test
-    public void indentedParagraphsWhichBeginWithRightAngleBracketsAndOptionalSpaces() {
+    public void beginWithRightAngleBracketsAndOptionalSpaces() {
         assertEquals(
                 document(
                         p(t("This is a normal paragraph.")),
