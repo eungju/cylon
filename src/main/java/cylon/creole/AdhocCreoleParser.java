@@ -42,7 +42,7 @@ public class AdhocCreoleParser {
 	static abstract class BlockRule extends TokenRule {
 		public static final int PATTERN_FLAGS = Pattern.MULTILINE | Pattern.UNICODE_CASE;
 		static final String NEWLINE = "(?:\\r\\n|\\r|\\n)";
-		
+
 		public BlockRule(String expression) {
 			super(expression);
 		}
@@ -196,8 +196,10 @@ public class AdhocCreoleParser {
 				parent.addChild(newBlock);
 				parser.cursor.descend(newBlock);
 				groupIndex = 2;
-			}
-			parser.cursor.ascendUntil(TextComposite.class);
+			} else {
+                TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
+                parent.addChild(new Unformatted(" "));
+            }
 			parser.parseInline(group[groupIndex]);
 		}
 	}
@@ -399,10 +401,20 @@ public class AdhocCreoleParser {
 		Document node = new Document();
 		cursor.descend(node);
 		Matcher matcher = blockRules.pattern().matcher(input);
+        int position = 0;
 		while (matcher.find()) {
+            String gap = input.substring(position, matcher.start());
+            if (gap.trim().length() > 0) {
+                throw new RuntimeException("Unrecognized input: " + gap);
+            }
 			TokenRule matchedRule = (TokenRule) blockRules.rule(matcher);
 			matchedRule.matched(blockRules.group(matcher, matchedRule), this);
+            position = matcher.end();
 		}
+        String gap = input.substring(position);
+        if (gap.trim().length() > 0) {
+            throw new RuntimeException("Unrecognized input: " + gap);
+        }
 		return cursor.ascendTo(node);
 	}
 

@@ -167,7 +167,7 @@ public class AdhocCreoleParserTest extends DomBuilder implements WikiParserSpec 
 	}
 
 	@Test public void paragraphCanHaveMultipleLines() {
-		assertEquals(document(p(t("a"), t("b"))),
+		assertEquals(document(p(t("a"), t(" "), t("b"))),
 				parser.document("a\nb"));
 	}
 
@@ -187,7 +187,7 @@ public class AdhocCreoleParserTest extends DomBuilder implements WikiParserSpec 
 	}
 
 	@Test public void paragraphCanHaveMultiIndentContainsText() {
-		assertEquals(document(p(1, t("one indented"), t("text")), p(2, t("two indented")))
+		assertEquals(document(p(1, t("one indented"), t(" "), t("text")), p(2, t("two indented")))
 				, parser.document(">one indented\ntext\n>>two indented"));
 	}	
 
@@ -360,7 +360,7 @@ public class AdhocCreoleParserTest extends DomBuilder implements WikiParserSpec 
 
 	@Test public void inlineFormattingsExtendsAcrossLineBreak() {
 		assertEquals(
-				document(p(i(t("a"), u("b")))),
+				document(p(i(t("a"), u(t(" "), t("b"))))),
 				parser.document("//a__\nb"));
 	}
 

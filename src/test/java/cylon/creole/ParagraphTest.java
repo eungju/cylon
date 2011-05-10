@@ -19,7 +19,7 @@ public class ParagraphTest extends DomBuilder {
         assertEquals(
                 document(
                         p(t("This is a normal paragraph.")),
-                        p(1, t("This is an indented"), t("paragraph in two lines.")),
+                        p(1, t("This is an indented"), t(" "), t("paragraph in two lines.")),
                         p(2, t("This is more indented."))),
                 parser.document(
                         "This is a normal paragraph.\n" +
@@ -33,7 +33,7 @@ public class ParagraphTest extends DomBuilder {
         assertEquals(
                 document(
                         p(t("This is a normal paragraph.")),
-                        p(1, t("This is an indented"), t("paragraph in two lines.")),
+                        p(1, t("This is an indented"), t(" "), t("paragraph in two lines.")),
                         p(2, t("This is more indented."))),
                 parser.document(
                         "This is a normal paragraph.\n" +
