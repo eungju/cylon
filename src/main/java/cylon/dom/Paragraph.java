@@ -1,5 +1,8 @@
 package cylon.dom;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Paragraph extends TextComposite implements Block {
 	private int indent; 
 	
@@ -19,4 +22,11 @@ public class Paragraph extends TextComposite implements Block {
 		}
 		visitor.visitLeave(this);
 	}
+
+    public String toString() {
+        List<Object> temp = new ArrayList<Object>();
+        temp.add(indent);
+        temp.addAll(children);
+        return DomUtils.toString(this, temp.toArray());
+    }
 }

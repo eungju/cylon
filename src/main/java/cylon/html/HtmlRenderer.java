@@ -65,15 +65,17 @@ public class HtmlRenderer implements DomVisitor {
 	}
 
 	public void visitEnter(Paragraph node) {
-		if(node.getIndent() > 0) {
-			buffer.append("<p class=\"indent_").append(node.getIndent()).append("\">");
-		} else {
-			buffer.append("<p>");
+		for (int i = 0; i < node.getIndent(); i++) {
+			buffer.append("<div style=\"margin-left: 2em;").append("\">");
 		}
+        buffer.append("<p>");
 	}
 
 	public void visitLeave(Paragraph node) {
 		buffer.append("</p>");
+        for (int i = 0; i < node.getIndent(); i++) {
+            buffer.append("</div>");
+        }
         newline();
 	}
 

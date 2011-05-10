@@ -186,11 +186,11 @@ public class AdhocCreoleParser {
 	
 	static class ParagraphRule extends BlockRule {
 		public ParagraphRule() {
-			super("^(>+)?(.+)");
+			super("^(?:(\\:+|>+)\\p{Blank}*)?(.+)");
 		}
 		public void matched(String[] group, AdhocCreoleParser parser) {
 			int groupIndex = 0;
-			if (!parser.cursor.isDescendedFrom(Paragraph.class) || group[1] != null) {
+			if (!(parser.cursor.isDescendedFrom(Paragraph.class) && group[1] == null)) {
 				Document parent = parser.cursor.ascendUntil(Document.class);
 				Paragraph newBlock = new Paragraph(group[1] != null? group[1].length() : 0);
 				parent.addChild(newBlock);

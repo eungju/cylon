@@ -44,7 +44,7 @@ public class HtmlRendererTest extends DomBuilder {
 
 	@Test public void paragraphCanHasIndentOne() {
 		p(1, t("a"), i("b"), b("c")).accept(visitor);
-		assertEquals("<p class=\"indent_1\">a<em>b</em><strong>c</strong></p>", visitor.asString());
+		assertEquals("<div style=\"margin-left: 2em;\"><p>a<em>b</em><strong>c</strong></p></div>", visitor.asString());
 	}
 
 	@Test public void unformatted() {
