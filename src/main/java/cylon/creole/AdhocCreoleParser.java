@@ -91,7 +91,7 @@ public class AdhocCreoleParser {
 	}
 
 	static class ListRule extends BlockRule {
-		final Pattern listItemPattern = Pattern.compile("^\\p{Blank}*([*#]+)(.*)$", BlockRule.PATTERN_FLAGS);
+		final Pattern listItemPattern = Pattern.compile("^\\p{Blank}*([*#]+)\\p{Blank}*(.*)$", BlockRule.PATTERN_FLAGS);
 		public ListRule() {
 			super("(?:^\\p{Blank}*(?:\\*[^*#]|#[^*#]).*)(?:" + NEWLINE + "^\\p{Blank}*[*#]+.*)*$");
 		}
@@ -176,9 +176,9 @@ public class AdhocCreoleParser {
 			parent.addChild(node);
 			parser.cursor.descend(node);
 			if (head) {
-				node.addChild(new Unformatted(group[2]));
+				node.addChild(new Unformatted(group[2].trim()));
 			} else {
-				parser.parseInline(group[2]);
+				parser.parseInline(group[2].trim());
 			}
 			return parser.cursor.ascendTo(node);
 		}
