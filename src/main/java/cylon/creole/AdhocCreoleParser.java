@@ -59,7 +59,7 @@ public class AdhocCreoleParser {
 
 	static class HeadingRule extends BlockRule {
 		public HeadingRule() {
-			super("^(={1,5})(.*?)(=*)\\p{Blank}*$");
+			super("^\\p{Blank}*(={1,6})\\p{Blank}*(.*?)(\\p{Blank}*=+\\p{Blank}*)?$");
 		}
 		public void matched(String[] group, AdhocCreoleParser parser) {
 			Document parent = parser.cursor.ascendUntil(Document.class);

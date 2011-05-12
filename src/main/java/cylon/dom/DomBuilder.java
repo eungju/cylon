@@ -20,6 +20,7 @@ public class DomBuilder {
 	protected Heading h3(String title) { return h(3, title); }
 	protected Heading h4(String title) { return h(4, title); }
 	protected Heading h5(String title) { return h(5, title); }
+    protected Heading h6(String title) { return h(6, title); }
 
 	protected UnorderedList ul(ListItem... children) {
 		return new UnorderedList(children);
