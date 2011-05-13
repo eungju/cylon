@@ -59,11 +59,11 @@ public class AdhocCreoleParser {
 
 	static class HeadingRule extends BlockRule {
 		public HeadingRule() {
-			super("^\\p{Blank}*(={1,6})\\p{Blank}*(.*?)(\\p{Blank}*=+\\p{Blank}*)?$");
+			super("^\\p{Blank}*(={1,6})(.*?)(=+\\p{Blank}*)?$");
 		}
 		public void matched(String[] group, AdhocCreoleParser parser) {
 			Document parent = parser.cursor.ascendUntil(Document.class);
-			Heading node = new Heading(group[1].length(), group[2]);
+			Heading node = new Heading(group[1].length(), group[2].trim());
 			parent.addChild(node);
 		}
 	}
@@ -91,7 +91,7 @@ public class AdhocCreoleParser {
 	}
 
 	static class ListRule extends BlockRule {
-		final Pattern listItemPattern = Pattern.compile("^\\p{Blank}*([*#]+)\\p{Blank}*(.*)$", BlockRule.PATTERN_FLAGS);
+		final Pattern listItemPattern = Pattern.compile("^\\p{Blank}*([*#]+)(.*)$", BlockRule.PATTERN_FLAGS);
 		public ListRule() {
 			super("(?:^\\p{Blank}*(?:\\*[^*#]|#[^*#]).*)(?:" + NEWLINE + "^\\p{Blank}*[*#]+.*)*$");
 		}
@@ -132,7 +132,7 @@ public class AdhocCreoleParser {
 				ListItem listItem = new ListItem();
 				list.addChild(listItem);
 				parser.cursor.descend(listItem);
-				parser.parseInline(matcher.group(2));
+				parser.parseInline(matcher.group(2).trim());
 			}
 		}
 	}
