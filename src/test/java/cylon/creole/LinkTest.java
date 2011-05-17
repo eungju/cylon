@@ -2,7 +2,6 @@ package cylon.creole;
 
 import cylon.dom.DomBuilder;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -35,7 +34,6 @@ public class LinkTest extends DomBuilder {
         assertEquals(document(p(link("link", image("image"), t(" inside link")))), dut.document("[[link|{{image}} inside link]]"));
     }
 
-    @Ignore("TODO")
     @Test public void
     freeStandingURLsShouldBeDetectedAndTurnedIntoLinks() {
         assertEquals(document(p(link("http://www.rawlink.org/"), t(", "), link("http://www.another.rawlink.org"))), dut.document("http://www.rawlink.org/, http://www.another.rawlink.org"));

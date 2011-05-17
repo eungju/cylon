@@ -221,16 +221,6 @@ public class AdhocCreoleParser {
 				parser.cursor.descend(newNode);
 			}
 		}
-
-		static final String OFFICIAL_SCHEMES = "aaa|aaas|acap|cap|cid|crid|data|dav|dict|dns|fax|file|ftp|go|gopher|h323|http|https|im|imap|ldap|mailto|mid|news|nfs|nntp|pop|pres|rtsp|sip|sips|snmp|tel|telnet|urn|wais|xmpp";
-		static final String UNOFFICIAL_SCHEMES = "about|aim|callto|cvs|ed2k|feed|fish|git|gizmoproject|iax2|irc|ircs|lastfm|ldaps|magnet|mms|msnim|nsfw|psyc|rsync|secondlife|skype|ssh|svn|sftp|smb|sms|soldat|steam|unreal|ut2004|webcal|xfire|ymsgr";
-		/**
-		 * See http://en.wikipedia.org/wiki/URI_scheme
-		 */
-		boolean isUrl(String uri) {
-			final Pattern PATTERN = Pattern.compile("^(" + OFFICIAL_SCHEMES + "|" + UNOFFICIAL_SCHEMES + "):[^:]*");
-			return PATTERN.matcher(uri).matches();
-		}
 	}
 
 	static class LinkRule extends InlineRule {
@@ -250,6 +240,22 @@ public class AdhocCreoleParser {
 			parser.cursor.ascendTo(node);
 		}
 	}	
+
+    static class FreeStandingUrlRule extends InlineRule {
+        static final String OFFICIAL_SCHEMES = "aaa|aaas|acap|cap|cid|crid|data|dav|dict|dns|fax|file|ftp|go|gopher|h323|http|https|im|imap|ldap|mailto|mid|news|nfs|nntp|pop|pres|rtsp|sip|sips|snmp|tel|telnet|urn|wais|xmpp";
+        static final String UNOFFICIAL_SCHEMES = "about|aim|callto|cvs|ed2k|feed|fish|git|gizmoproject|iax2|irc|ircs|lastfm|ldaps|magnet|mms|msnim|nsfw|psyc|rsync|secondlife|skype|ssh|svn|sftp|smb|sms|soldat|steam|unreal|ut2004|webcal|xfire|ymsgr";
+
+        static final String REGEX = "(" + OFFICIAL_SCHEMES + "|" + UNOFFICIAL_SCHEMES + "):\\S*[^ \t,.?!:;\\\\\"']";
+
+        public FreeStandingUrlRule() {
+            super(REGEX);
+        }
+        public void matched(String[] group, AdhocCreoleParser parser) {
+            TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
+            Link node = new Link(group[0]);
+            parent.addChild(node);
+        }
+    }
 
 	static class CodeRule extends InlineRule {
 		static final String REGEX = "\\{\\{\\{(.*?)\\}\\}\\}";
@@ -382,6 +388,7 @@ public class AdhocCreoleParser {
 	private static final RuleSet inlineRules = new RuleSet(
 			new Rule[] {
 					new LinkRule()
+                    , new FreeStandingUrlRule()
 					, new CodeRule()
 					, new ImageRule()
 					, new BoldRule()
