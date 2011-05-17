@@ -70,7 +70,7 @@ public class AdhocCreoleParser {
 
 	static class HorizontalLineRule extends BlockRule {
 		public HorizontalLineRule() {
-			super("^----\\p{Blank}*$");
+			super("^\\p{Blank}*----\\p{Blank}*$");
 		}
 		public void matched(String[] group, AdhocCreoleParser parser) {
 			Document parent = parser.cursor.ascendUntil(Document.class);
