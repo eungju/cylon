@@ -26,8 +26,6 @@ import cylon.dom.Underline;
 import cylon.dom.Unformatted;
 import cylon.dom.UnorderedList;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -271,25 +269,15 @@ public class AdhocCreoleParser {
 	}
 
 	static class ImageRule extends InlineRule {
-		static final String REGEX = "\\{\\{(.+?)((\\|\\w+=[^|]*)*)\\}\\}";
+		static final String REGEX = "\\{\\{([^|]+)(?:\\|(.+))?\\}\\}";
 		
 		public ImageRule() {
 			super(REGEX);
 		}
 		public void matched(String[] group, AdhocCreoleParser parser) {
 			TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
-			Map<String, String> options = options(group[2]);
-			Image node = new Image(group[1], options.get("alt"));
+			Image node = new Image(group[1], group[2]);
 			parent.addChild(node);
-		}
-		Map<String,String> options(String options) {
-			Map<String,String> result = new HashMap<String, String>();
-			Pattern pattern = Pattern.compile("\\|(\\w+)=([^|]*)");
-			Matcher matcher = pattern.matcher(options);
-			while (matcher.find()) {
-				result.put(matcher.group(1), matcher.group(2));
-			}
-			return result;
 		}
 	}
 
