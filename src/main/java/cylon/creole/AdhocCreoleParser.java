@@ -348,7 +348,7 @@ public class AdhocCreoleParser {
 	}
 
 	static class EscapeRule extends InlineRule {
-		static final String REGEX = "~(\\p{Punct})";
+		static final String REGEX = "~(\\S)";
 		
 		public EscapeRule() {
 			super(REGEX);
