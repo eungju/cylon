@@ -4,7 +4,7 @@
     <groupId>cylon</groupId>
     <artifactId>cylon</artifactId>
     <packaging>jar</packaging>
-    <version>0.9</version>
+    <version>0.10-SNAPSHOT</version>
 
     <name>A Creole Markup Parser</name>
     <url>http://code.google.com/p/cylon</url>
