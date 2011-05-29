@@ -78,12 +78,13 @@ public class AdhocCreoleParser {
 	}
 
 	static class PreformattedRule extends BlockRule {
+        final Pattern closingBracesPattern = Pattern.compile("^\\p{Blank}(\\p{Blank}*\\}\\}\\}\\p{Blank}*)$", PATTERN_FLAGS);
 		public PreformattedRule() {
 			super("^\\{\\{\\{(?:#!(.+))?\\p{Blank}*" + NEWLINE + "((?s:.)*?)^\\}\\}\\}\\p{Blank}*$");
 		}
 		public void matched(String[] group, AdhocCreoleParser parser) {
 			Document parent = parser.cursor.ascendUntil(Document.class);
-			Preformatted node = new Preformatted(group[1], group[2].replaceAll("^~(}}})", "$1"));
+			Preformatted node = new Preformatted(group[1], closingBracesPattern.matcher(group[2]).replaceAll("$1"));
 			parent.addChild(node);
 		}
 	}
