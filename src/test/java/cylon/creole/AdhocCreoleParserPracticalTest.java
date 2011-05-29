@@ -8,11 +8,13 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
+
 public class AdhocCreoleParserPracticalTest {
-	AdhocCreoleParser parser;
+	private AdhocCreoleParser dut;
 
 	@Before public void beforeEach() {
-		parser = new AdhocCreoleParser();
+		dut = new AdhocCreoleParser();
 	}
 
 	String loadContent(String fileName) {
@@ -25,17 +27,17 @@ public class AdhocCreoleParserPracticalTest {
 
     @Test public void standardTestCase() throws IOException {
         HtmlRenderer r = new HtmlRenderer(true);
-        parser.document(loadContent("creole1.0test.txt")).accept(r);
-        System.out.println(r.asString());
+        dut.document(loadContent("creole1.0test.txt")).accept(r);
+        assertEquals(loadContent("creole1.0test.html"), r.asString());
     }
 
 	@Test(timeout=1000) public void shouldBeFast() throws IOException {
         for (int i = 0; i < 10; i++) {
-		    parser.document(loadContent("creole1.0test.txt"));
+		    dut.document(loadContent("creole1.0test.txt"));
         }
 	}
 
 	@Test public void preStackoverflow() {
-		parser.document(loadContent("error-pre-stackoverflow.txt"));
+		dut.document(loadContent("error-pre-stackoverflow.txt"));
 	}
 }

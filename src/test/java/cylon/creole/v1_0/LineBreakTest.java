@@ -1,5 +1,6 @@
-package cylon.creole;
+package cylon.creole.v1_0;
 
+import cylon.creole.AdhocCreoleParser;
 import cylon.dom.DomBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +10,7 @@ import static org.junit.Assert.*;
 /**
  * http://www.wikicreole.org/wiki/Creole1.0#section-Creole1.0-LineBreaks
  */
-public class LinkBreakTest extends DomBuilder {
+public class LineBreakTest extends DomBuilder {
     private AdhocCreoleParser dut;
 
     @Before

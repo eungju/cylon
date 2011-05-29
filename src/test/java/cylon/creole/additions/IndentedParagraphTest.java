@@ -1,17 +1,21 @@
-package cylon.creole;
+package cylon.creole.additions;
 
+import cylon.creole.AdhocCreoleParser;
 import cylon.dom.DomBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+/**
+ * http://www.wikicreole.org/wiki/CreoleAdditions#section-CreoleAdditions-IndentedParagraphs
+ */
 public class IndentedParagraphTest extends DomBuilder {
-    private AdhocCreoleParser parser;
+    private AdhocCreoleParser dut;
 
     @Before
     public void beforeEach() {
-        parser = new AdhocCreoleParser();
+        dut = new AdhocCreoleParser();
     }
 
     @Test
@@ -21,7 +25,7 @@ public class IndentedParagraphTest extends DomBuilder {
                         p(t("This is a normal paragraph.")),
                         p(1, t("This is an indented"), t(" "), t("paragraph in two lines.")),
                         p(2, t("This is more indented."))),
-                parser.document(
+                dut.document(
                         "This is a normal paragraph.\n" +
                         ":This is an indented\n" +
                         "paragraph in two lines.\n" +
@@ -35,7 +39,7 @@ public class IndentedParagraphTest extends DomBuilder {
                         p(t("This is a normal paragraph.")),
                         p(1, t("This is an indented"), t(" "), t("paragraph in two lines.")),
                         p(2, t("This is more indented."))),
-                parser.document(
+                dut.document(
                         "This is a normal paragraph.\n" +
                         "> This is an indented\n" +
                         "paragraph in two lines.\n" +

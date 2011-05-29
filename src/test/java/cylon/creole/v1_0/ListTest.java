@@ -1,5 +1,6 @@
-package cylon.creole;
+package cylon.creole.v1_0;
 
+import cylon.creole.AdhocCreoleParser;
 import cylon.dom.DomBuilder;
 import org.junit.Before;
 import org.junit.Ignore;
