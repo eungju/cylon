@@ -172,12 +172,12 @@ public class CreoleMarkupRendererTest extends DomBuilder {
 
 	@Test public void imageWithAlternative() {
 		image("uri", "alt").accept(visitor);
-		assertEquals("{{uri|alt=alt}}", visitor.asString());
+		assertEquals("{{uri|alt}}", visitor.asString());
 	}
 
 	@Test public void whenImageIsAttachment() {
 		image("attachment:filename.ext", "alt").accept(visitor);
-		assertEquals("{{attachment:filename.ext|alt=alt}}", visitor.asString());
+		assertEquals("{{attachment:filename.ext|alt}}", visitor.asString());
 	}
 
 	@Test public void forcedLineBreakMarkupIsTwoBackslashes() {
