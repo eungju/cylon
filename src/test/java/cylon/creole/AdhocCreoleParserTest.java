@@ -147,7 +147,7 @@ public class AdhocCreoleParserTest extends DomBuilder implements WikiParserSpec 
 	@Test public void tableCellCanHaveImage() {
 		assertEquals(
 				document(table(tr(td(t("a")), td(image("uri", "alt"))))),
-				parser.document("|a|{{uri|alt=alt}}|\n"));
+				parser.document("|a|{{uri|alt}}|\n"));
 	}
 
 	@Test public void tableCellCanHaveCode() {
@@ -306,7 +306,7 @@ public class AdhocCreoleParserTest extends DomBuilder implements WikiParserSpec 
 	}
 
 	@Test public void imageWithAlternative() {
-		assertEquals(p(image("uri", "alt")), parser.formattedText("{{uri|alt=alt}}"));
+		assertEquals(p(image("uri", "alt")), parser.formattedText("{{uri|alt}}"));
 	}
 	
 	@Test public void paragraphsContainsFormattedText() {

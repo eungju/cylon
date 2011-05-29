@@ -145,7 +145,7 @@ public class AdhocCreoleParser {
 				+ "[^|])+)", BlockRule.PATTERN_FLAGS);
 		
 		public TableRule() {
-			super("^\\|.+\\|\\p{Blank}*$");
+			super("^\\p{Blank}*\\|.+$");
 		}
 		
 		public void matched(String[] group, AdhocCreoleParser parser) {
@@ -160,7 +160,7 @@ public class AdhocCreoleParser {
 			TableRow row = new TableRow();
 			table.addChild(row);
 			parser.cursor.descend(row);
-			Matcher matcher = tableCellPattern.matcher(group[0]);
+			Matcher matcher = tableCellPattern.matcher(group[0].trim());
 			while (matcher.find()) {
 				tableCell_(new String[] {matcher.group(), matcher.group(1), matcher.group(2)}, parser);
 			}
