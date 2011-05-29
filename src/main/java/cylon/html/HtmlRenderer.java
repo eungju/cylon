@@ -36,7 +36,7 @@ public class HtmlRenderer implements DomVisitor {
         this.indent = indent;
     }
 
-	public String asString() {
+	public String getResult() {
 		return buffer.toString();
 	}
 

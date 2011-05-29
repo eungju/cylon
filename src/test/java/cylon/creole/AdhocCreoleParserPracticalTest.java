@@ -28,7 +28,7 @@ public class AdhocCreoleParserPracticalTest {
     @Test public void standardTestCase() throws IOException {
         HtmlRenderer r = new HtmlRenderer(true);
         dut.document(loadContent("creole1.0test.txt")).accept(r);
-        assertEquals(loadContent("creole1.0test.html"), r.asString());
+        assertEquals(loadContent("creole1.0test.html"), r.getResult());
     }
 
 	@Test(timeout=1000) public void shouldBeFast() throws IOException {

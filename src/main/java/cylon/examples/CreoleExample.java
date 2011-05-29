@@ -10,6 +10,6 @@ public class CreoleExample {
         Document document = parser.document("Hello World");
         HtmlRenderer renderer = new HtmlRenderer(true);
         document.accept(renderer);
-        System.out.println(renderer.asString());
+        System.out.println(renderer.getResult());
     }
 }
