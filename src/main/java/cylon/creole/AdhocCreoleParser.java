@@ -29,7 +29,7 @@ import cylon.dom.UnorderedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AdhocCreoleParser {
+public class AdhocCreoleParser implements CreoleParser {
 	static abstract class TokenRule extends Rule {
 		public TokenRule(String expression) {
 			super(expression);
