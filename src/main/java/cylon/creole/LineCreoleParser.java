@@ -46,8 +46,8 @@ public class LineCreoleParser extends AbstractCreoleParser {
         } else if (recognizeBlockSeparator(line)) {
         } else if (recognizeHeading(line)) {
         } else if (recognizeHorizontalRule(line)) {
-        } else if (recognizeList(line)) {
         } else if (recognizeTable(line)) {
+        } else if (recognizeList(line)) {
         } else if (recognizeParagraph(line)) {
         } else {
             throw new IllegalArgumentException("Not recognized line: " + line);
@@ -109,27 +109,44 @@ public class LineCreoleParser extends AbstractCreoleParser {
         return false;
     }
 
-    //TODO
     boolean recognizeList(String line) {
         Pattern LIST_PATTERN = Pattern.compile("^\\s*([*#]+)\\s*(.*?)\\s*");
         Matcher matcher = LIST_PATTERN.matcher(line);
         if (matcher.matches()) {
-            ItemList list;
-            if (matcher.group(1).charAt(0) == '*') {
-                list = new UnorderedList();
-            } else {
-                list = new OrderedList();
+            String bullets = matcher.group(1);
+            //indent
+            while (cursor.count(ItemList.class) < bullets.length()) {
+                ItemList list = bullets.charAt(cursor.count(ItemList.class)) == '*' ? new UnorderedList() : new OrderedList();
+                if (cursor.count(ItemList.class) == 0) {
+                    Document parent = cursor.ascendUntil(Document.class);
+                    parent.addChild(list);
+                } else {
+                    cursor.ascendUntil(ListItem.class).addList(list);
+                }
+                cursor.descend(list);
+                //여러 단계를 한 번에 들어갈 경우 빈 ListItem을 넣어준다.
+                if (bullets.length() - cursor.count(ItemList.class) > 0) {
+                    ListItem listItem = new ListItem();
+                    list.addChild(listItem);
+                    cursor.descend(listItem);
+                }
             }
-            Document parent = cursor.ascendUntil(Document.class);
-            parent.addChild(list);
-            cursor.descend(list);
-
-            ListItem item = new ListItem();
-            list.addChild(item);
-            cursor.descend(item);
-
-            recognizeInlineElements(matcher.group(2));
+            //dedent
+            while (cursor.count(ItemList.class) > bullets.length()) {
+                cursor.ascendTo(ItemList.class);
+            }
             
+            ItemList list = cursor.ascendUntil(ItemList.class);
+            ListItem listItem = new ListItem();
+            list.addChild(listItem);
+            cursor.descend(listItem);
+            recognizeInlineElements(matcher.group(2));
+            return true;
+        } else if (cursor.count(ItemList.class) > 0) {
+            //list items span multiple lines
+            TextComposite parent = cursor.ascendUntil(TextComposite.class);
+            parent.addChild(new Unformatted(" "));
+            recognizeInlineElements(line.trim());
             return true;
         }
         return false;

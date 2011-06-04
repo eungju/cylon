@@ -96,4 +96,14 @@ public class DomTrunk {
 			throw new AssertionError("expected: " + expected.getName() + " but was: " + actual.getClass().getName());
 		}
 	}
+
+    public int count(Class<? extends Node> type) {
+        int result = 0;
+        for (Node each : trunk) {
+            if (type.isAssignableFrom(each.getClass())) {
+                result++;
+            }
+        }
+        return result;
+    }
 }
