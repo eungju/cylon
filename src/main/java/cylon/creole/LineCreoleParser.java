@@ -1,6 +1,5 @@
 package cylon.creole;
 
-import cylon.dom.Code;
 import cylon.dom.Document;
 import cylon.dom.Heading;
 import cylon.dom.HorizontalLine;
@@ -19,9 +18,8 @@ import cylon.dom.UnorderedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class LineCreoleParser implements CreoleParser {
+public class LineCreoleParser extends AbstractCreoleParser {
     private static final Pattern NEWLINE_PATTERN = Pattern.compile("\\r\\n|\\r|\\n");
-    private final DomTrunk cursor = new DomTrunk();
     private StringBuilder nowikiBuffer = null;
     
     public Document document(String input) {
@@ -113,7 +111,7 @@ public class LineCreoleParser implements CreoleParser {
 
     //TODO
     boolean recognizeList(String line) {
-        Pattern LIST_PATTERN = Pattern.compile("^\\s*([*#]+)\\s*(.*)$\\s*");
+        Pattern LIST_PATTERN = Pattern.compile("^\\s*([*#]+)\\s*(.*?)\\s*");
         Matcher matcher = LIST_PATTERN.matcher(line);
         if (matcher.matches()) {
             ItemList list;
@@ -137,34 +135,48 @@ public class LineCreoleParser implements CreoleParser {
         return false;
     }
 
-    //TODO
     boolean recognizeTable(String line) {
-        Pattern TABLE_PATTERN = Pattern.compile("^\\s*\\|.*");
+        Pattern TABLE_PATTERN = Pattern.compile("^\\s*(\\|.*?)\\|?\\s*");
         Matcher matcher = TABLE_PATTERN.matcher(line);
         if (matcher.matches()) {
-            Document parent = cursor.ascendUntil(Document.class);
-
-            Table table = new Table();
-            parent.addChild(table);
-            cursor.descend(table);
-
+            if (!cursor.is(Table.class)) {
+                Document parent = cursor.ascendUntil(Document.class);
+                Table newBlock = new Table();
+                parent.addChild(newBlock);
+                cursor.descend(newBlock);
+            }
+            Table table = cursor.ascendUntil(Table.class);
             TableRow row = new TableRow();
             table.addChild(row);
             cursor.descend(row);
-
-            TableCell cell = new TableCell(false);
-            row.addChild(cell);
-            cursor.descend(cell);
-
-            recognizeInlineElements("cell");
-
+            recognizeCells(matcher.group(1));
+            cursor.ascendAndAssert(row);
             return true;
         }
         return false;
     }
 
+    void recognizeCells(String line) {
+        Pattern TABLE_CELL_PATTERN = Pattern.compile("\\|(=)?((?:"
+				+ LinkRule.REGEX + "|"
+				+ ImageRule.REGEX + "|"
+				+ CodeRule.REGEX + "|"
+				+ EscapeRule.REGEX + "|"
+				+ "[^|])*)");
+        Matcher matcher = TABLE_CELL_PATTERN.matcher(line);
+        while (matcher.find()) {
+            TableRow parent = cursor.ascendUntil(TableRow.class);
+            boolean head = matcher.group(1) != null;
+            TableCell node = new TableCell(head);
+            parent.addChild(node);
+            cursor.descend(node);
+            recognizeInlineElements(matcher.group(2).trim());
+            cursor.ascendTo(node);
+        }
+    }
+    
     boolean recognizeParagraph(String line) {
-        Pattern PARAGRAPH_PATTERN = Pattern.compile("^(?:(\\:+|>+)\\s*)?(.*)$\\s*");
+        Pattern PARAGRAPH_PATTERN = Pattern.compile("^(?:(\\:+|>+)\\s*)?(.*)\\s*");
         Matcher matcher = PARAGRAPH_PATTERN.matcher(line);
         if (matcher.matches()) {
             int groupIndex = 0;
@@ -185,10 +197,27 @@ public class LineCreoleParser implements CreoleParser {
         return false;
     }
 
+	//ORDER IS IMPORTANT TO PARSE CORRECTLY
+	private static final RuleSet inlineRules = new RuleSet(
+			new Rule[] {
+					new LinkRule()
+                    , new FreeStandingUrlRule()
+					, new CodeRule()
+					, new ImageRule()
+					, new BoldRule()
+					, new ItalicRule()
+					, new UnderlineRule()
+					, new StrikeRule()
+					, new SuperscriptRule()
+					, new SubscriptRule()
+					, new ForcedLinebreakRule()
+					, new EscapeRule()
+			}
+			, InlineRule.PATTERN_FLAGS
+	);
+
     void recognizeInlineElements(String line) {
-        //FIXME:
-        Pattern pattern = Pattern.compile("\\{{3}(.*?)\\}{3}");
-        Matcher matcher = pattern.matcher(line);
+        Matcher matcher = inlineRules.pattern().matcher(line);
         int pos = 0;
         while (matcher.find()) {
             if (pos < matcher.start()) {
@@ -196,16 +225,18 @@ public class LineCreoleParser implements CreoleParser {
                 TextComposite parent = cursor.ascendUntil(TextComposite.class);
                 parent.addChild(new Unformatted(unformatted));
             }
+            TokenRule matchedRule = (TokenRule) inlineRules.rule(matcher);
+            matchedRule.matched(inlineRules.group(matcher, matchedRule), this);
             pos = matcher.end();
-
-            TextComposite parent = cursor.ascendUntil(TextComposite.class);
-            Code node = new Code(matcher.group(1));
-            parent.addChild(node);
         }
         if (pos < line.length()) {
             String unformatted = line.substring(pos);
             TextComposite parent = cursor.ascendUntil(TextComposite.class);
             parent.addChild(new Unformatted(unformatted));
         }
+    }
+
+    protected void parseInline(String input) {
+        recognizeInlineElements(input);
     }
 }
