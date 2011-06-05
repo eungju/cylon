@@ -2,7 +2,6 @@ package cylon.creole;
 
 import cylon.dom.DomBuilder;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -92,7 +91,7 @@ public abstract class CreoleParserTest extends DomBuilder {
 		assertEquals(document(ul(
 				li(texts(t("a")), ol(
 						li(t("b")))))),
-				dut.document("*a\n*#b"));
+				dut.document("*a\n##b"));
 	}
 
 	@Test public void listAllowsMultiDepthIndentAndDedent() {

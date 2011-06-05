@@ -115,9 +115,9 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
 	}
 
 	static class ListRule extends BlockRule {
-		final Pattern listItemPattern = Pattern.compile("^\\p{Blank}*([*#]+)(.*)$", BlockRule.PATTERN_FLAGS);
+		final Pattern listItemPattern = Pattern.compile("^\\p{Blank}*(\\*+|#+)(.*)$", BlockRule.PATTERN_FLAGS);
 		public ListRule() {
-			super("(?:^\\p{Blank}*(?:\\*[^*#]|#[^*#]).*)(?:" + NEWLINE + "^\\p{Blank}*[*#]+.*)*$");
+			super("(?:^\\p{Blank}*(?:\\*[^*]|#[^#]).*)(?:" + NEWLINE + "^\\p{Blank}*(\\*+|#+)+.*)*$");
 		}
 		public void matched(String[] group, AdhocCreoleParser parser) {
 			int depth = 0;

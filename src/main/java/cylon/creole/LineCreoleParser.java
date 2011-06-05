@@ -116,7 +116,7 @@ public class LineCreoleParser extends AbstractCreoleParser {
     }
 
     boolean recognizeList(String line) {
-        Pattern LIST_PATTERN = Pattern.compile("^\\s*([*#]+)\\s*(.*?)\\s*");
+        Pattern LIST_PATTERN = Pattern.compile("^\\s*(\\*+|#+)\\s*(.*?)\\s*");
         Matcher matcher = LIST_PATTERN.matcher(line);
         if (matcher.matches() && (cursor.count(ItemList.class) > 0 || matcher.group(1).length() == 1)) {
             String bullets = matcher.group(1);
