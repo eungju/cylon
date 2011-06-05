@@ -118,7 +118,7 @@ public class LineCreoleParser extends AbstractCreoleParser {
     boolean recognizeList(String line) {
         Pattern LIST_PATTERN = Pattern.compile("^\\s*([*#]+)\\s*(.*?)\\s*");
         Matcher matcher = LIST_PATTERN.matcher(line);
-        if (matcher.matches()) {
+        if (matcher.matches() && (cursor.count(ItemList.class) > 0 || matcher.group(1).length() == 1)) {
             String bullets = matcher.group(1);
             //indent
             while (cursor.count(ItemList.class) < bullets.length()) {
@@ -202,19 +202,17 @@ public class LineCreoleParser extends AbstractCreoleParser {
         Pattern PARAGRAPH_PATTERN = Pattern.compile("^(?:(\\:+|>+)\\s*)?(.*)\\s*");
         Matcher matcher = PARAGRAPH_PATTERN.matcher(line);
         if (matcher.matches()) {
-            int groupIndex = 0;
             String indent = matcher.group(1);
             if (!(cursor.isDescendedFrom(Paragraph.class) && indent == null)) {
                 Document parent = cursor.ascendUntil(Document.class);
                 Paragraph newBlock = new Paragraph(indent != null? indent.length() : 0);
                 parent.addChild(newBlock);
                 cursor.descend(newBlock);
-                groupIndex = 2;
             } else {
                 TextComposite parent = cursor.ascendUntil(TextComposite.class);
                 parent.addChild(new Unformatted(" "));
             }
-            inlineParser.recognize(matcher.group(groupIndex));
+            inlineParser.recognize(matcher.group(2));
             return true;
         }
         return false;
