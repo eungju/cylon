@@ -84,14 +84,8 @@ public class CreoleMarkupRenderer extends CreoleMarkupBuilder implements DomVisi
 
 	public void visit(Preformatted node) {
 		newline().emit("{{{");
-		if (node.hasInterpreter()) {
-			String[] args = node.getInterpreter().split("\\s+");
-			if (args[0].equals("syntax")) {
-				emit("#!syntax ").emit(args[1]);
-			}
-		}
 		newline();
-		preformatted(node.getText());
+        emit(node.getText().replaceAll("(?m:^(\\}\\}\\}\\p{Blank}*)$)", " $1"));
 		newline().emit("}}}").newline();
 	}
 

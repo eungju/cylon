@@ -74,10 +74,10 @@ public class LineCreoleParser extends AbstractCreoleParser {
             Matcher matcher = NOWIKI_CLOSE_PATTERN.matcher(line);
             if (matcher.matches()) {
                 Document parent = cursor.ascendUntil(Document.class);
-                parent.addChild(new Preformatted(null, nowikiBuffer.toString()));
+                parent.addChild(new Preformatted(nowikiBuffer.toString()));
                 nowikiBuffer = null;
             } else {
-                nowikiBuffer.append(line.matches("\\s+}}}\\s*") ? line.substring(1) : line);
+                nowikiBuffer.append(line.matches("\\s+\\}{3}\\s*") ? line.substring(1) : line);
             }
             return true;
         }

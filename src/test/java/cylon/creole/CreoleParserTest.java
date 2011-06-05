@@ -2,16 +2,27 @@ package cylon.creole;
 
 import cylon.dom.DomBuilder;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class AdhocCreoleParserTest extends DomBuilder {
-	private AdhocCreoleParser dut;
+public abstract class CreoleParserTest extends DomBuilder {
+    protected CreoleParser dut;
 
-	@Before public void beforeEach() {
-		dut = new AdhocCreoleParser();
-	}
+    public static class AdhocParserTest extends CreoleParserTest {
+        @Before
+        public void beforeEach() {
+            dut = new AdhocCreoleParser();
+        }
+    }
+
+    public static class LineParserTest extends CreoleParserTest {
+        @Before
+        public void beforeEach() {
+            dut = new LineCreoleParser();
+        }
+    }
 
 	@Test public void documentCanBeEmpty() {
 		assertEquals(document(), dut.document(""));
@@ -211,102 +222,98 @@ public class AdhocCreoleParserTest extends DomBuilder {
 		assertEquals(document(pre("|a|\n")), dut.document("{{{\n|a|\n}}}"));
 	}
 
-	@Test public void preformattedCanHaveInterpreter() {
-		assertEquals(document(pre("syntax java", "a\n")), dut.document("{{{#!syntax java\na\n}}}"));
-	}
-	
 	/** inline element test */
 	@Test public void boldMarkupIsTwoStars() {
-		assertEquals(p(b("a")), dut.formattedText("**a**"));
+		assertEquals(document(p(b("a"))), dut.document("**a**"));
 	}
 
 	@Test public void italicMarkupIsTwoSlashes() {
-		assertEquals(p(i("a")), dut.formattedText("//a//"));
+		assertEquals(document(p(i("a"))), dut.document("//a//"));
 	}
 
 	@Test public void underlineMarkupIsTwoUnderbars() {
-		assertEquals(p(u("a")), dut.formattedText("__a__"));
+		assertEquals(document(p(u("a"))), dut.document("__a__"));
 	}
 
 	@Test public void strikeMarkupIsTwoDashes() {
-		assertEquals(p(s("a")), dut.formattedText("--a--"));
+		assertEquals(document(p(s("a"))), dut.document("--a--"));
 	}
 
 	@Test public void superscriptMarkupIsTwoCarets() {
-		assertEquals(p(sup(t("a"))), dut.formattedText("^^a^^"));
+		assertEquals(document(p(sup(t("a")))), dut.document("^^a^^"));
 	}
 
 	@Test public void subscriptMarkupIsTwoComas() {
-		assertEquals(p(sub(t("a"))), dut.formattedText(",,a,,"));
+		assertEquals(document(p(sub(t("a")))), dut.document(",,a,,"));
 	}
 
 	@Test public void codeMarkupIsThreeBraces() {
-		assertEquals(p(code("**a**")), dut.formattedText("{{{**a**}}}"));
+		assertEquals(document(p(code("**a**"))), dut.document("{{{**a**}}}"));
 	}
 
 	@Test public void forcedLineBreakMarkupIsTwoBackslashes() {
-		assertEquals(p(t("a"), br(), t("b")), dut.formattedText("a\\\\b"));
+		assertEquals(document(p(t("a"), br(), t("b"))), dut.document("a\\\\b"));
 	}
 
 	@Test public void escapeMarkupIsTilde() {
-		assertEquals(p(t("*"), t("*not bold"), t("*"), t("*")), dut.formattedText("~**not bold~**"));
+		assertEquals(document(p(t("*"), t("*not bold"), t("*"), t("*"))), dut.document("~**not bold~**"));
 	}
 
 	@Test public void escapeMatchesWithOnlyOneCharacter() {
-		assertEquals(p(t("*"), b("a")), dut.formattedText("~***a**"));
+		assertEquals(document(p(t("*"), b("a"))), dut.document("~***a**"));
 	}
 
 	@Test public void formattedTextCanBeMixed() {
-		assertEquals(p(t("a"), b("b"), t("c")), dut.formattedText("a**b**c"));
+		assertEquals(document(p(t("a"), b("b"), t("c"))), dut.document("a**b**c"));
 	}
 
 	@Test public void boldShouldBeNonGreedy() {
-		assertEquals(p(b("a"), t("b"), b("c")), dut.formattedText("**a**b**c**"));
+		assertEquals(document(p(b("a"), t("b"), b("c"))), dut.document("**a**b**c**"));
 	}
 
 	@Test public void boldExtendsAcrossLineBreak() {
-		assertEquals(p(b("a\nb\nc")), dut.formattedText("**a\nb\nc**"));
+		assertEquals(document(p(b(t("a"), t(" "), t("b"), t(" "), t("c")))), dut.document("**a\nb\nc**"));
 	}
 
 	@Test public void italicShouldBeNonGreedy() {
-		assertEquals(p(i("a"), t("b"), i("c")), dut.formattedText("//a//b//c//"));
+		assertEquals(document(p(i("a"), t("b"), i("c"))), dut.document("//a//b//c//"));
 	}
 
 	@Test public void boldCanNestItalic() {
-		assertEquals(p(b(t("a"), i("b"), t("c"))), dut.formattedText("**a//b//c**"));
+		assertEquals(document(p(b(t("a"), i("b"), t("c")))), dut.document("**a//b//c**"));
 	}
 
 	@Test public void italicCanNestBold() {
-		assertEquals(p(i(t("a"), b("b"), t("c"))), dut.formattedText("//a**b**c//"));
+		assertEquals(document(p(i(t("a"), b("b"), t("c")))), dut.document("//a**b**c//"));
 	}
 
 	@Test public void linkWithoutDescription() {
-		assertEquals(p(link("Page Name")), dut.formattedText("[[Page Name]]"));
+		assertEquals(document(p(link("Page Name"))), dut.document("[[Page Name]]"));
 	}
 
 	@Test public void linkWithDescription() {
-		assertEquals(p(link("Page Name", t("desc"))), dut.formattedText("[[Page Name|desc]]"));
+		assertEquals(document(p(link("Page Name", t("desc")))), dut.document("[[Page Name|desc]]"));
 	}
 	
 	@Test public void linkWithDescriptionWithWhiteSpace() {
-		assertEquals(p(link("Page Name", t("desc"))), dut.formattedText("[[Page Name | desc]]"));
+		assertEquals(document(p(link("Page Name", t("desc")))), dut.document("[[Page Name | desc]]"));
 	}
 	
 
 	@Test public void linkDescriptionCanBeFormatted() {
-		assertEquals(p(link("Page Name", b("desc"))), dut.formattedText("[[Page Name|**desc**]]"));
+		assertEquals(document(p(link("Page Name", b("desc")))), dut.document("[[Page Name|**desc**]]"));
 	}
 
 	@Test public void urlLink() {
-		assertEquals(p(link("http://a")), dut.formattedText("[[http://a]]"));
+		assertEquals(document(p(link("http://a"))), dut.document("[[http://a]]"));
 	}
 
 	@Test public void imageWithoutAlternative() {
-		assertEquals(p(image("uri")), dut.formattedText("{{uri}}"));
+		assertEquals(document(p(image("uri"))), dut.document("{{uri}}"));
 	}
 
 	@Test public void imageWithAlternative() {
-		assertEquals(p(image("uri", "alt")), dut.formattedText("{{uri|alt}}"));
+		assertEquals(document(p(image("uri", "alt"))), dut.document("{{uri|alt}}"));
 	}
 	
 	@Test public void paragraphsContainsFormattedText() {
@@ -345,7 +352,7 @@ public class AdhocCreoleParserTest extends DomBuilder {
 	}
 
 	@Test public void listsFollowedByParagraph() {
-		assertEquals(document(ul(li(t("a"))), p(t("b"))), dut.document("*a\nb"));
+		assertEquals(document(ul(li(t("a"))), p(t("b"))), dut.document("*a\n\nb"));
 	}
 
 	@Test public void listsFollowedByTable() {

@@ -156,13 +156,7 @@ public class CreoleMarkupRendererTest extends DomBuilder {
 
 	@Test public void preformattedEscape() {
 		pre("}}}").accept(visitor);
-		assertEquals("{{{\n~}}}\n}}}\n", visitor.asString());
-	}
-
-	@Test public void preformattedCanHaveInterpreter() {
-		// FIXME: is it supported by smart editor?
-		pre("syntax java", "a").accept(visitor);
-		assertEquals("{{{#!syntax java\na\n}}}\n", visitor.asString());
+		assertEquals("{{{\n }}}\n}}}\n", visitor.asString());
 	}
 
 	@Test public void imageWithoutAlternative() {

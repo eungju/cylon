@@ -191,14 +191,7 @@ public class HtmlRenderer implements DomVisitor {
 	}
 
 	public void visit(Preformatted node) {
-		buffer.append("<pre");
-		if (node.hasInterpreter()) {
-			String[] args = node.getInterpreter().split("\\s+");
-			if (args[0].equals("syntax")) {
-				buffer.append(" name=\"code\" class=\"").append(args[1]).append('"');
-			}
-		}
-		buffer.append('>');
+		buffer.append("<pre>");
 		buffer.append(escapeHtml(node.getText()));
 		buffer.append("</pre>");
         newline();

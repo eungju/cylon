@@ -55,13 +55,9 @@ public class DomBuilder {
 	}
 	
 	protected Preformatted pre(String text) {
-		return new Preformatted(null, text);
+		return new Preformatted(text);
 	}
-	
-	protected Preformatted pre(String interpreter, String text) {
-		return new Preformatted(interpreter, text);
-	}
-	
+
 	protected Paragraph p(Text...children) {
 		return new Paragraph(0, children);
 	}

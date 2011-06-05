@@ -141,11 +141,5 @@ public class CreoleMarkupBuilder {
 		}
 		return this;
 	}
-	
-	private static final String PREFORMATTED_PUNCTATIONS_REGEX = "(^\\}\\}\\})";
-	public CreoleMarkupBuilder preformatted(String str) {
-		buffer.append(str.replaceAll(PREFORMATTED_PUNCTATIONS_REGEX, "~$1"));
-		return this;
-	}
 }
 

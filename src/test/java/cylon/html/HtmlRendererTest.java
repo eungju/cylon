@@ -157,16 +157,6 @@ public class HtmlRendererTest extends DomBuilder {
 		assertEquals("<pre>&lt;a&gt;</pre>", visitor.getResult());
 	}
 
-	@Test public void preformattedWithSyntaxHighlighter() {
-		pre("syntax java", "<a>").accept(visitor);
-		assertEquals("<pre name=\"code\" class=\"java\">&lt;a&gt;</pre>", visitor.getResult());
-	}
-
-	@Test public void preformattedWithUnknown() {
-		pre("unknown", "<a>").accept(visitor);
-		assertEquals("<pre>&lt;a&gt;</pre>", visitor.getResult());
-	}
-
 	@Test public void code() {
 		code("<a>").accept(visitor);
 		assertEquals("<code>&lt;a&gt;</code>", visitor.getResult());
