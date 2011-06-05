@@ -15,7 +15,6 @@ import cylon.dom.Underline;
 import cylon.dom.Unformatted;
 
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class InlineParser {
     //ORDER IS IMPORTANT TO PARSE CORRECTLY
@@ -34,7 +33,7 @@ public class InlineParser {
                     , new SuperscriptRule()
                     , new SubscriptRule()
             }
-            , InlineRule.PATTERN_FLAGS
+            , 0
     );
     protected final DomTrunk cursor;
 
@@ -63,8 +62,6 @@ public class InlineParser {
     }
 
     abstract static class InlineRule extends Rule {
-        public static final int PATTERN_FLAGS = Pattern.UNICODE_CASE;
-
         public InlineRule(String expression) {
             super(expression);
         }
