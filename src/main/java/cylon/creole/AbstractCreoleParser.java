@@ -6,6 +6,4 @@ public abstract class AbstractCreoleParser implements CreoleParser {
     protected final DomTrunk cursor = new DomTrunk();
 
     public abstract Document document(String input);
-
-    protected abstract void parseInline(String input);
 }

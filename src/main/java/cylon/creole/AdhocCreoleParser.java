@@ -19,21 +19,63 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AdhocCreoleParser extends AbstractCreoleParser {
+    //ORDER IS IMPORTANT TO PARSE CORRECTLY
+	private static final RuleSet BLOCK_RULES = new RuleSet(
+			new Rule[] {
+					new BlockSeparatorRule()
+					, new HeadingRule()
+					, new HorizontalLineRule()
+					, new PreformattedRule()
+					, new ListRule()
+					, new TableRule()
+					, new ParagraphRule()
+			}
+			, BlockRule.PATTERN_FLAGS
+	);
+    private final InlineParser inlineParser;
 
-    static abstract class BlockRule extends TokenRule {
+    public AdhocCreoleParser() {
+        super();
+        inlineParser = new InlineParser(cursor);
+    }
+
+	public Document document(String input) {
+		Document node = new Document();
+		cursor.descend(node);
+		Matcher matcher = BLOCK_RULES.pattern().matcher(input);
+        int position = 0;
+		while (matcher.find()) {
+            String gap = input.substring(position, matcher.start());
+            if (gap.trim().length() > 0) {
+                throw new RuntimeException("Unrecognized input: " + gap);
+            }
+			BlockRule matchedRule = (BlockRule) BLOCK_RULES.rule(matcher);
+			matchedRule.matched(BLOCK_RULES.group(matcher, matchedRule), this);
+            position = matcher.end();
+		}
+        String gap = input.substring(position);
+        if (gap.trim().length() > 0) {
+            throw new RuntimeException("Unrecognized input: " + gap);
+        }
+		return cursor.ascendTo(node);
+	}
+    
+    static abstract class BlockRule extends Rule {
 		public static final int PATTERN_FLAGS = Pattern.MULTILINE | Pattern.UNICODE_CASE;
 		static final String NEWLINE = "(?:\\r\\n|\\r|\\n)";
 
 		public BlockRule(String expression) {
 			super(expression);
 		}
+
+        public abstract void matched(String[] group, AdhocCreoleParser parser);
 	}
 
 	static class BlockSeparatorRule extends BlockRule {
 		public BlockSeparatorRule() {
 			super("(?:^\\p{Blank}*" + NEWLINE + ")+");
 		}
-		public void matched(String[] group, AbstractCreoleParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			parser.cursor.ascendUntil(Document.class);
 		}
 	}
@@ -42,7 +84,7 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
 		public HeadingRule() {
 			super("^\\p{Blank}*(={1,6})(.*?)(=+\\p{Blank}*)?$");
 		}
-		public void matched(String[] group, AbstractCreoleParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			Document parent = parser.cursor.ascendUntil(Document.class);
 			Heading node = new Heading(group[1].length(), group[2].trim());
 			parent.addChild(node);
@@ -53,7 +95,7 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
 		public HorizontalLineRule() {
 			super("^\\p{Blank}*----\\p{Blank}*$");
 		}
-		public void matched(String[] group, AbstractCreoleParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			Document parent = parser.cursor.ascendUntil(Document.class);
 			HorizontalLine node = new HorizontalLine();
 			parent.addChild(node);
@@ -65,7 +107,7 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
 		public PreformattedRule() {
 			super("^\\{\\{\\{(?:#!(.+))?\\p{Blank}*" + NEWLINE + "((?s:.)*?)^\\}\\}\\}\\p{Blank}*$");
 		}
-		public void matched(String[] group, AbstractCreoleParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			Document parent = parser.cursor.ascendUntil(Document.class);
 			Preformatted node = new Preformatted(group[1], closingBracesPattern.matcher(group[2]).replaceAll("$1"));
 			parent.addChild(node);
@@ -77,7 +119,7 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
 		public ListRule() {
 			super("(?:^\\p{Blank}*(?:\\*[^*#]|#[^*#]).*)(?:" + NEWLINE + "^\\p{Blank}*[*#]+.*)*$");
 		}
-		public void matched(String[] group, AbstractCreoleParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			int depth = 0;
 			Matcher matcher = listItemPattern.matcher(group[0]);
 			while (matcher.find()) {
@@ -114,7 +156,7 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
 				ListItem listItem = new ListItem();
 				list.addChild(listItem);
 				parser.cursor.descend(listItem);
-				parser.parseInline(matcher.group(2).trim());
+				parser.inlineParser.recognize(matcher.group(2).trim());
 			}
 		}
 	}
@@ -122,17 +164,17 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
 	static class TableRule extends BlockRule {
 		/** "|" 문자가 들어가는 마크업은 추가 되어야 한다 */
 		final Pattern tableCellPattern = Pattern.compile("\\|(=)?((?:"
-				+ LinkRule.REGEX + "|"
-				+ ImageRule.REGEX + "|"
-				+ CodeRule.REGEX + "|"
-				+ EscapeRule.REGEX + "|"
+				+ InlineParser.LinkRule.REGEX + "|"
+				+ InlineParser.ImageRule.REGEX + "|"
+				+ InlineParser.CodeRule.REGEX + "|"
+				+ InlineParser.EscapeRule.REGEX + "|"
 				+ "[^|])+)", BlockRule.PATTERN_FLAGS);
 		
 		public TableRule() {
 			super("^\\p{Blank}*\\|.+$");
 		}
 		
-		public void matched(String[] group, AbstractCreoleParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			if (!parser.cursor.is(Table.class)) {
 				Document parent = parser.cursor.ascendUntil(Document.class);
 				Table newBlock = new Table();
@@ -151,13 +193,13 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
 			parser.cursor.ascendAndAssert(row);
 		}
 
-		public TableCell tableCell_(String[] group, AbstractCreoleParser parser) {
+		public TableCell tableCell_(String[] group, AdhocCreoleParser parser) {
 			TableRow parent = parser.cursor.ascendUntil(TableRow.class);
 			boolean head = group[1] != null;
 			TableCell node = new TableCell(head);
 			parent.addChild(node);
 			parser.cursor.descend(node);
-			parser.parseInline(group[2].trim());
+			parser.inlineParser.recognize(group[2].trim());
 			return parser.cursor.ascendTo(node);
 		}
 	}
@@ -166,7 +208,7 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
 		public ParagraphRule() {
 			super("^(?:(\\:+|>+)\\p{Blank}*)?(.+)");
 		}
-		public void matched(String[] group, AbstractCreoleParser parser) {
+		public void matched(String[] group, AdhocCreoleParser parser) {
 			int groupIndex = 0;
 			if (!(parser.cursor.isDescendedFrom(Paragraph.class) && group[1] == null)) {
 				Document parent = parser.cursor.ascendUntil(Document.class);
@@ -178,87 +220,14 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
                 TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
                 parent.addChild(new Unformatted(" "));
             }
-			parser.parseInline(group[groupIndex]);
+			parser.inlineParser.recognize(group[groupIndex]);
 		}
-	}
-
-    //ORDER IS IMPORTANT TO PARSE CORRECTLY
-	private static final RuleSet blockRules = new RuleSet(
-			new Rule[] {
-					new BlockSeparatorRule()
-					, new HeadingRule()
-					, new HorizontalLineRule()
-					, new PreformattedRule()
-					, new ListRule()
-					, new TableRule()
-					, new ParagraphRule()
-			}
-			, BlockRule.PATTERN_FLAGS
-	);
-	//ORDER IS IMPORTANT TO PARSE CORRECTLY
-	private static final RuleSet inlineRules = new RuleSet(
-			new Rule[] {
-					new LinkRule()
-                    , new FreeStandingUrlRule()
-					, new CodeRule()
-					, new ImageRule()
-					, new BoldRule()
-					, new ItalicRule()
-					, new UnderlineRule()
-					, new StrikeRule()
-					, new SuperscriptRule()
-					, new SubscriptRule()
-					, new ForcedLinebreakRule()
-					, new EscapeRule()
-			}
-			, InlineRule.PATTERN_FLAGS
-	);
-
-	public Document document(String input) {
-		Document node = new Document();
-		cursor.descend(node);
-		Matcher matcher = blockRules.pattern().matcher(input);
-        int position = 0;
-		while (matcher.find()) {
-            String gap = input.substring(position, matcher.start());
-            if (gap.trim().length() > 0) {
-                throw new RuntimeException("Unrecognized input: " + gap);
-            }
-			TokenRule matchedRule = (TokenRule) blockRules.rule(matcher);
-			matchedRule.matched(blockRules.group(matcher, matchedRule), this);
-            position = matcher.end();
-		}
-        String gap = input.substring(position);
-        if (gap.trim().length() > 0) {
-            throw new RuntimeException("Unrecognized input: " + gap);
-        }
-		return cursor.ascendTo(node);
 	}
 
 	TextComposite formattedText(String input) {
 		Paragraph node = new Paragraph(0);
 		cursor.descend(node);
-		parseInline(input);
+		inlineParser.recognize(input);
 		return cursor.ascendTo(node);
-	}
-
-	protected void parseInline(String input) {
-		Matcher matcher = inlineRules.pattern().matcher(input);
-		int position = 0;
-		while (matcher.find()) {
-			String plain = input.substring(position, matcher.start());
-			if (plain.length() > 0) {
-				TextComposite parent = cursor.ascendUntil(TextComposite.class);
-				parent.addChild(new Unformatted(plain));
-			}
-			TokenRule matchedRule = (TokenRule) inlineRules.rule(matcher);
-			matchedRule.matched(inlineRules.group(matcher, matchedRule), this);
-			position = matcher.end();
-		}
-		String plain = input.substring(position);
-		if (plain.length() > 0) {
-			TextComposite parent = cursor.ascendUntil(TextComposite.class);
-			parent.addChild(new Unformatted(plain));
-		}
 	}
 }

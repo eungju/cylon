@@ -20,7 +20,13 @@ import java.util.regex.Pattern;
 
 public class LineCreoleParser extends AbstractCreoleParser {
     private static final Pattern NEWLINE_PATTERN = Pattern.compile("\\r\\n|\\r|\\n");
+    private final InlineParser inlineParser;
     private StringBuilder nowikiBuffer = null;
+
+    public LineCreoleParser() {
+        super();
+        inlineParser = new InlineParser(cursor);
+    }
     
     public Document document(String input) {
         Document root = new Document();
@@ -140,13 +146,13 @@ public class LineCreoleParser extends AbstractCreoleParser {
             ListItem listItem = new ListItem();
             list.addChild(listItem);
             cursor.descend(listItem);
-            recognizeInlineElements(matcher.group(2));
+            inlineParser.recognize(matcher.group(2));
             return true;
         } else if (cursor.count(ItemList.class) > 0) {
             //list items span multiple lines
             TextComposite parent = cursor.ascendUntil(TextComposite.class);
             parent.addChild(new Unformatted(" "));
-            recognizeInlineElements(line.trim());
+            inlineParser.recognize(line.trim());
             return true;
         }
         return false;
@@ -175,10 +181,10 @@ public class LineCreoleParser extends AbstractCreoleParser {
 
     void recognizeCells(String line) {
         Pattern TABLE_CELL_PATTERN = Pattern.compile("\\|(=)?((?:"
-				+ LinkRule.REGEX + "|"
-				+ ImageRule.REGEX + "|"
-				+ CodeRule.REGEX + "|"
-				+ EscapeRule.REGEX + "|"
+				+ InlineParser.LinkRule.REGEX + "|"
+				+ InlineParser.ImageRule.REGEX + "|"
+				+ InlineParser.CodeRule.REGEX + "|"
+				+ InlineParser.EscapeRule.REGEX + "|"
 				+ "[^|])*)");
         Matcher matcher = TABLE_CELL_PATTERN.matcher(line);
         while (matcher.find()) {
@@ -187,7 +193,7 @@ public class LineCreoleParser extends AbstractCreoleParser {
             TableCell node = new TableCell(head);
             parent.addChild(node);
             cursor.descend(node);
-            recognizeInlineElements(matcher.group(2).trim());
+            inlineParser.recognize(matcher.group(2).trim());
             cursor.ascendTo(node);
         }
     }
@@ -208,52 +214,9 @@ public class LineCreoleParser extends AbstractCreoleParser {
                 TextComposite parent = cursor.ascendUntil(TextComposite.class);
                 parent.addChild(new Unformatted(" "));
             }
-            recognizeInlineElements(matcher.group(groupIndex));
+            inlineParser.recognize(matcher.group(groupIndex));
             return true;
         }
         return false;
-    }
-
-	//ORDER IS IMPORTANT TO PARSE CORRECTLY
-	private static final RuleSet inlineRules = new RuleSet(
-			new Rule[] {
-					new LinkRule()
-                    , new FreeStandingUrlRule()
-					, new CodeRule()
-					, new ImageRule()
-					, new BoldRule()
-					, new ItalicRule()
-					, new UnderlineRule()
-					, new StrikeRule()
-					, new SuperscriptRule()
-					, new SubscriptRule()
-					, new ForcedLinebreakRule()
-					, new EscapeRule()
-			}
-			, InlineRule.PATTERN_FLAGS
-	);
-
-    void recognizeInlineElements(String line) {
-        Matcher matcher = inlineRules.pattern().matcher(line);
-        int pos = 0;
-        while (matcher.find()) {
-            if (pos < matcher.start()) {
-                String unformatted = line.substring(pos, matcher.start());
-                TextComposite parent = cursor.ascendUntil(TextComposite.class);
-                parent.addChild(new Unformatted(unformatted));
-            }
-            TokenRule matchedRule = (TokenRule) inlineRules.rule(matcher);
-            matchedRule.matched(inlineRules.group(matcher, matchedRule), this);
-            pos = matcher.end();
-        }
-        if (pos < line.length()) {
-            String unformatted = line.substring(pos);
-            TextComposite parent = cursor.ascendUntil(TextComposite.class);
-            parent.addChild(new Unformatted(unformatted));
-        }
-    }
-
-    protected void parseInline(String input) {
-        recognizeInlineElements(input);
     }
 }
