@@ -9,7 +9,7 @@ public interface DomVisitor {
 
 	void visit(Heading node);
 	
-	void visit(HorizontalLine node);	
+	void visit(HorizontalRule node);
 
 	void visitEnter(UnorderedList node);
 	void visitLeave(UnorderedList node);
@@ -41,7 +41,7 @@ public interface DomVisitor {
 
 	void visit(Image node);
 	
-	void visit(ForcedLinebreak node);
+	void visit(LineBreak node);
 
 	void visit(Code node);
 

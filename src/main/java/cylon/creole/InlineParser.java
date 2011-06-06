@@ -2,7 +2,7 @@ package cylon.creole;
 
 import cylon.dom.Bold;
 import cylon.dom.Code;
-import cylon.dom.ForcedLinebreak;
+import cylon.dom.LineBreak;
 import cylon.dom.Image;
 import cylon.dom.Italic;
 import cylon.dom.Link;
@@ -35,10 +35,10 @@ public class InlineParser {
             }
             , 0
     );
-    protected final DomTrunk cursor;
+    protected final DomTrunk trunk;
 
-    public InlineParser(DomTrunk cursor) {
-        this.cursor = cursor;
+    public InlineParser(DomTrunk trunk) {
+        this.trunk = trunk;
     }
 
     public void recognize(String line) {
@@ -47,7 +47,7 @@ public class InlineParser {
         while (matcher.find()) {
             if (pos < matcher.start()) {
                 String unformatted = line.substring(pos, matcher.start());
-                TextComposite parent = cursor.ascendUntil(TextComposite.class);
+                TextComposite parent = trunk.ascendUntil(TextComposite.class);
                 parent.addChild(new Unformatted(unformatted));
             }
             InlineRule matchedRule = (InlineRule) INLINE_RULES.rule(matcher);
@@ -56,7 +56,7 @@ public class InlineParser {
         }
         if (pos < line.length()) {
             String unformatted = line.substring(pos);
-            TextComposite parent = cursor.ascendUntil(TextComposite.class);
+            TextComposite parent = trunk.ascendUntil(TextComposite.class);
             parent.addChild(new Unformatted(unformatted));
         }
     }
@@ -67,13 +67,13 @@ public class InlineParser {
         }
 
         <T extends Text> void inlineOpenClose(Class<T> type, T newNode, InlineParser parser) {
-            if (parser.cursor.is(type)) {
-                T node = parser.cursor.ascendUntil(type);
-                parser.cursor.ascendAndAssert(node);
+            if (parser.trunk.is(type)) {
+                T node = parser.trunk.ascendUntil(type);
+                parser.trunk.ascendAndAssert(node);
             } else {
-                TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
+                TextComposite parent = parser.trunk.ascendUntil(TextComposite.class);
                 parent.addChild(newNode);
-                parser.cursor.descend(newNode);
+                parser.trunk.descend(newNode);
             }
         }
 
@@ -88,7 +88,7 @@ public class InlineParser {
         }
 
         public void matched(String[] group, InlineParser parser) {
-            TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
+            TextComposite parent = parser.trunk.ascendUntil(TextComposite.class);
             Code node = new Code(group[1]);
             parent.addChild(node);
         }
@@ -102,7 +102,7 @@ public class InlineParser {
         }
 
         public void matched(String[] group, InlineParser parser) {
-            TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
+            TextComposite parent = parser.trunk.ascendUntil(TextComposite.class);
             Unformatted node = new Unformatted(group[1]);
             parent.addChild(node);
         }
@@ -114,8 +114,8 @@ public class InlineParser {
         }
 
         public void matched(String[] group, InlineParser parser) {
-            TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
-            ForcedLinebreak node = new ForcedLinebreak();
+            TextComposite parent = parser.trunk.ascendUntil(TextComposite.class);
+            LineBreak node = new LineBreak();
             parent.addChild(node);
         }
     }
@@ -128,14 +128,14 @@ public class InlineParser {
         }
 
         public void matched(String[] group, InlineParser parser) {
-            TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
+            TextComposite parent = parser.trunk.ascendUntil(TextComposite.class);
             Link node = new Link(group[1].trim());
             parent.addChild(node);
-            parser.cursor.descend(node);
+            parser.trunk.descend(node);
             if (group[2] != null) {
                 parser.recognize(group[2].trim());
             }
-            parser.cursor.ascendTo(node);
+            parser.trunk.ascendTo(node);
         }
     }
 
@@ -150,7 +150,7 @@ public class InlineParser {
         }
 
         public void matched(String[] group, InlineParser parser) {
-            TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
+            TextComposite parent = parser.trunk.ascendUntil(TextComposite.class);
             Link node = new Link(group[0]);
             parent.addChild(node);
         }
@@ -164,7 +164,7 @@ public class InlineParser {
         }
 
         public void matched(String[] group, InlineParser parser) {
-            TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
+            TextComposite parent = parser.trunk.ascendUntil(TextComposite.class);
             Image node = new Image(group[1], group[2]);
             parent.addChild(node);
         }

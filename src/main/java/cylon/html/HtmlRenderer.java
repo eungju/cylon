@@ -4,9 +4,9 @@ import cylon.dom.Bold;
 import cylon.dom.Code;
 import cylon.dom.Document;
 import cylon.dom.DomVisitor;
-import cylon.dom.ForcedLinebreak;
+import cylon.dom.HorizontalRule;
+import cylon.dom.LineBreak;
 import cylon.dom.Heading;
-import cylon.dom.HorizontalLine;
 import cylon.dom.Image;
 import cylon.dom.Italic;
 import cylon.dom.Link;
@@ -59,7 +59,7 @@ public class HtmlRenderer implements DomVisitor {
         newline();
     }
 
-    public void visit(HorizontalLine node) {
+    public void visit(HorizontalRule node) {
 		buffer.append("<hr />");
         newline();
 	}
@@ -203,7 +203,7 @@ public class HtmlRenderer implements DomVisitor {
 		buffer.append("</code>");
 	}
 
-	public void visit(ForcedLinebreak node) {
+	public void visit(LineBreak node) {
 		buffer.append("<br />");
         newline();
 	}

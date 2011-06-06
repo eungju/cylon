@@ -31,7 +31,7 @@ public class CreoleMarkupRendererTest extends DomBuilder {
 		assertEquals("=a=\n==b==\n===c===\n====d====\n=====e=====\n", visitor.asString());
 	}
 
-	@Test public void horizontalLine() {
+	@Test public void horizontalRule() {
 		hr().accept(visitor);
 		assertEquals("----\n", visitor.asString());
 	}

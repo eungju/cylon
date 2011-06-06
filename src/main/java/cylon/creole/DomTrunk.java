@@ -6,26 +6,26 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class DomTrunk {
-	private Deque<Node> trunk = new ArrayDeque<Node>();
+	private Deque<Node> nodes = new ArrayDeque<Node>();
 
 	public void descend(Node node) {
-		trunk.push(node);
+		nodes.push(node);
 	}
 	
 	public Node ascend() {
-		return trunk.pop();
+		return nodes.pop();
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends Node> T ascendAndAssert(T node) {
-		Node e = trunk.pop();
+		Node e = nodes.pop();
 		assertNode(node, e);
 		return (T) e;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends Node> T ascendAndAssert(Class<T> type) {
-		Node e = trunk.pop();
+		Node e = nodes.pop();
 		assertNode(type, e);
 		return (T) e;
 	}
@@ -35,11 +35,11 @@ public class DomTrunk {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends Node> T ascendUntil(Class<T> type) {
-		while (!trunk.isEmpty()) {
+		while (!nodes.isEmpty()) {
 			if (is(type)) {
-				return (T)trunk.peek();
+				return (T) nodes.peek();
 			}
-			trunk.pop();
+			nodes.pop();
 		}
 		throw new IllegalStateException("");
 	}
@@ -49,11 +49,11 @@ public class DomTrunk {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends Node> T ascendTo(Class<T> type) {
-		while (!trunk.isEmpty()) {
+		while (!nodes.isEmpty()) {
 			if (is(type)) {
-				return (T)trunk.pop();
+				return (T) nodes.pop();
 			}
-			trunk.pop();
+			nodes.pop();
 		}
 		throw new IllegalStateException("");
 	}
@@ -63,21 +63,21 @@ public class DomTrunk {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends Node> T ascendTo(T node) {
-		while (!trunk.isEmpty()) {
-			if (trunk.peek() == node) {
-				return (T)trunk.pop();
+		while (!nodes.isEmpty()) {
+			if (nodes.peek() == node) {
+				return (T) nodes.pop();
 			}
-			trunk.pop();
+			nodes.pop();
 		}
 		throw new IllegalStateException("");
 	}
 
 	public boolean is(Class<? extends Node> type) {
-		return type.isAssignableFrom(trunk.peek().getClass());
+		return type.isAssignableFrom(nodes.peek().getClass());
 	}
 
 	public boolean isDescendedFrom(Class<? extends Node> type) {
-		for (Node each: trunk) {
+		for (Node each: nodes) {
 			if (type.isAssignableFrom(each.getClass())) {
 				return true;
 			}
@@ -99,7 +99,7 @@ public class DomTrunk {
 
     public int count(Class<? extends Node> type) {
         int result = 0;
-        for (Node each : trunk) {
+        for (Node each : nodes) {
             if (type.isAssignableFrom(each.getClass())) {
                 result++;
             }

@@ -4,29 +4,18 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import cylon.html.HtmlRenderer;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
-public abstract class PracticalCreoleParserTest {
+public class PracticalCreoleParserTest {
     protected CreoleParser dut;
 
-    @Ignore
-    public static class AdhocParserTest extends PracticalCreoleParserTest {
-        @Before
-        public void beforeEach() {
-            dut = new AdhocCreoleParser();
-        }
-    }
-
-    public static class LineParserTest extends PracticalCreoleParserTest {
-        @Before
-        public void beforeEach() {
-            dut = new LineCreoleParser();
-        }
+    @Before
+    public void beforeEach() {
+        dut = new DefaultCreoleParser();
     }
 
 	String loadContent(String fileName) {

@@ -32,7 +32,7 @@ public class HtmlRendererTest extends DomBuilder {
     }
 
 
-	@Test public void horizontalLine() {
+	@Test public void horizontalRule() {
 		hr().accept(visitor);
 		assertEquals("<hr />", visitor.getResult());
 	}	

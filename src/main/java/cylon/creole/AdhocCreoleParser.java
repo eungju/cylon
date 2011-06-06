@@ -2,7 +2,7 @@ package cylon.creole;
 
 import cylon.dom.Document;
 import cylon.dom.Heading;
-import cylon.dom.HorizontalLine;
+import cylon.dom.HorizontalRule;
 import cylon.dom.ItemList;
 import cylon.dom.ListItem;
 import cylon.dom.OrderedList;
@@ -18,13 +18,13 @@ import cylon.dom.UnorderedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AdhocCreoleParser extends AbstractCreoleParser {
+public class AdhocCreoleParser implements CreoleParser {
     //ORDER IS IMPORTANT TO PARSE CORRECTLY
 	private static final RuleSet BLOCK_RULES = new RuleSet(
 			new Rule[] {
 					new BlockSeparatorRule()
 					, new HeadingRule()
-					, new HorizontalLineRule()
+					, new HorizontalRuleRule()
 					, new PreformattedRule()
 					, new ListRule()
 					, new TableRule()
@@ -32,16 +32,17 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
 			}
 			, BlockRule.PATTERN_FLAGS
 	);
+    private final DomTrunk trunk;
     private final InlineParser inlineParser;
 
     public AdhocCreoleParser() {
-        super();
-        inlineParser = new InlineParser(cursor);
+        trunk = new DomTrunk();
+        inlineParser = new InlineParser(trunk);
     }
 
 	public Document document(String input) {
 		Document node = new Document();
-		cursor.descend(node);
+		trunk.descend(node);
 		Matcher matcher = BLOCK_RULES.pattern().matcher(input);
         int position = 0;
 		while (matcher.find()) {
@@ -57,7 +58,7 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
         if (gap.trim().length() > 0) {
             throw new RuntimeException("Unrecognized input: " + gap);
         }
-		return cursor.ascendTo(node);
+		return trunk.ascendTo(node);
 	}
     
     static abstract class BlockRule extends Rule {
@@ -76,7 +77,7 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
 			super("(?:^\\p{Blank}*" + NEWLINE + ")+");
 		}
 		public void matched(String[] group, AdhocCreoleParser parser) {
-			parser.cursor.ascendUntil(Document.class);
+			parser.trunk.ascendUntil(Document.class);
 		}
 	}
 
@@ -85,19 +86,19 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
 			super("^\\p{Blank}*(={1,6})(.*?)(=+\\p{Blank}*)?$");
 		}
 		public void matched(String[] group, AdhocCreoleParser parser) {
-			Document parent = parser.cursor.ascendUntil(Document.class);
+			Document parent = parser.trunk.ascendUntil(Document.class);
 			Heading node = new Heading(group[1].length(), group[2].trim());
 			parent.addChild(node);
 		}
 	}
 
-	static class HorizontalLineRule extends BlockRule {
-		public HorizontalLineRule() {
+	static class HorizontalRuleRule extends BlockRule {
+		public HorizontalRuleRule() {
 			super("^\\p{Blank}*----\\p{Blank}*$");
 		}
 		public void matched(String[] group, AdhocCreoleParser parser) {
-			Document parent = parser.cursor.ascendUntil(Document.class);
-			HorizontalLine node = new HorizontalLine();
+			Document parent = parser.trunk.ascendUntil(Document.class);
+			HorizontalRule node = new HorizontalRule();
 			parent.addChild(node);
 		}
 	}
@@ -108,7 +109,7 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
 			super("^\\{\\{\\{\\p{Blank}*" + NEWLINE + "((?s:.)*?)^\\}\\}\\}\\p{Blank}*$");
 		}
 		public void matched(String[] group, AdhocCreoleParser parser) {
-			Document parent = parser.cursor.ascendUntil(Document.class);
+			Document parent = parser.trunk.ascendUntil(Document.class);
 			Preformatted node = new Preformatted(group[1].replaceAll("(?m:^\\p{Blank}(\\p{Blank}*\\}\\}\\}\\p{Blank}*)$)", "$1"));
 			parent.addChild(node);
 		}
@@ -130,32 +131,32 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
 					while (indentDiff-- != 0) {
 						list = bullet.charAt(depth) == '*' ? new UnorderedList() : new OrderedList();
 						if (depth > 0) {
-							parser.cursor.ascendUntil(ListItem.class).addList(list);
+							parser.trunk.ascendUntil(ListItem.class).addList(list);
 						} else {
-							Document parent = parser.cursor.ascendUntil(Document.class);
+							Document parent = parser.trunk.ascendUntil(Document.class);
 							parent.addChild(list);
 						}
-						parser.cursor.descend(list);
+						parser.trunk.descend(list);
 						depth++;
 						//여러 단계를 한 번에 들어갈 경우 빈 ListItem을 넣어준다.
 						if (indentDiff != 0) {
 							ListItem listItem = new ListItem();
 							list.addChild(listItem);
-							parser.cursor.descend(listItem);
+							parser.trunk.descend(listItem);
 						}
 					}
 				} else if (indentDiff < 0) {
 					while (indentDiff++ != 0) {
-						parser.cursor.ascendTo(ItemList.class);
+						parser.trunk.ascendTo(ItemList.class);
 						depth--;
 					}
-					list = parser.cursor.ascendUntil(ItemList.class);
+					list = parser.trunk.ascendUntil(ItemList.class);
 				} else {
-					list = parser.cursor.ascendUntil(ItemList.class);
+					list = parser.trunk.ascendUntil(ItemList.class);
 				}
 				ListItem listItem = new ListItem();
 				list.addChild(listItem);
-				parser.cursor.descend(listItem);
+				parser.trunk.descend(listItem);
 				parser.inlineParser.recognize(matcher.group(2).trim());
 			}
 		}
@@ -175,32 +176,32 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
 		}
 		
 		public void matched(String[] group, AdhocCreoleParser parser) {
-			if (!parser.cursor.is(Table.class)) {
-				Document parent = parser.cursor.ascendUntil(Document.class);
+			if (!parser.trunk.is(Table.class)) {
+				Document parent = parser.trunk.ascendUntil(Document.class);
 				Table newBlock = new Table();
 				parent.addChild(newBlock);
-				parser.cursor.descend(newBlock);
+				parser.trunk.descend(newBlock);
 			}
-			Table table = parser.cursor.ascendUntil(Table.class);
+			Table table = parser.trunk.ascendUntil(Table.class);
 
 			TableRow row = new TableRow();
 			table.addChild(row);
-			parser.cursor.descend(row);
+			parser.trunk.descend(row);
 			Matcher matcher = tableCellPattern.matcher(group[0].trim());
 			while (matcher.find()) {
 				tableCell_(new String[] {matcher.group(), matcher.group(1), matcher.group(2)}, parser);
 			}
-			parser.cursor.ascendAndAssert(row);
+			parser.trunk.ascendAndAssert(row);
 		}
 
 		public TableCell tableCell_(String[] group, AdhocCreoleParser parser) {
-			TableRow parent = parser.cursor.ascendUntil(TableRow.class);
+			TableRow parent = parser.trunk.ascendUntil(TableRow.class);
 			boolean head = group[1] != null;
 			TableCell node = new TableCell(head);
 			parent.addChild(node);
-			parser.cursor.descend(node);
+			parser.trunk.descend(node);
 			parser.inlineParser.recognize(group[2].trim());
-			return parser.cursor.ascendTo(node);
+			return parser.trunk.ascendTo(node);
 		}
 	}
 	
@@ -209,13 +210,13 @@ public class AdhocCreoleParser extends AbstractCreoleParser {
 			super("^(?:(\\:+|>+)\\p{Blank}*)?(.+)");
 		}
 		public void matched(String[] group, AdhocCreoleParser parser) {
-			if (!(parser.cursor.isDescendedFrom(Paragraph.class) && group[1] == null)) {
-				Document parent = parser.cursor.ascendUntil(Document.class);
+			if (!(parser.trunk.isDescendedFrom(Paragraph.class) && group[1] == null)) {
+				Document parent = parser.trunk.ascendUntil(Document.class);
 				Paragraph newBlock = new Paragraph(group[1] != null? group[1].length() : 0);
 				parent.addChild(newBlock);
-				parser.cursor.descend(newBlock);
+				parser.trunk.descend(newBlock);
 			} else {
-                TextComposite parent = parser.cursor.ascendUntil(TextComposite.class);
+                TextComposite parent = parser.trunk.ascendUntil(TextComposite.class);
                 parent.addChild(new Unformatted(" "));
             }
 			parser.inlineParser.recognize(group[2]);

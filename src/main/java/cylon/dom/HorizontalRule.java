@@ -2,9 +2,9 @@ package cylon.dom;
 
 import cylon.support.ObjectSupport;
 
-public class HorizontalLine extends ObjectSupport implements Block {
+public class HorizontalRule extends ObjectSupport implements Block {
 
-	public HorizontalLine() {
+	public HorizontalRule() {
 	}
 	
 	public void accept(DomVisitor visitor) {

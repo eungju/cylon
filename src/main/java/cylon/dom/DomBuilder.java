@@ -6,8 +6,8 @@ public class DomBuilder {
 		return new Document(children);
 	}
 	
-	protected HorizontalLine hr() {
-		return new HorizontalLine();
+	protected HorizontalRule hr() {
+		return new HorizontalRule();
 	}
 	
 	protected Heading h(int level, String title) {
@@ -86,8 +86,8 @@ public class DomBuilder {
 		return new Code(text);
 	}
 	
-	protected ForcedLinebreak br() {
-		return new ForcedLinebreak();
+	protected LineBreak br() {
+		return new LineBreak();
 	}
 	
 	protected Unformatted t(String text) {
