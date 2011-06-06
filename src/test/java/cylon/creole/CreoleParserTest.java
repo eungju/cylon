@@ -221,6 +221,10 @@ public abstract class CreoleParserTest extends DomBuilder {
 		assertEquals(document(pre("|a|\n")), dut.document("{{{\n|a|\n}}}"));
 	}
 
+    @Test public void preformattedBlocksMustBeClosed() {
+        assertEquals(document(p(t("{{{"), t(" "), t("abc"))), dut.document("{{{\nabc"));
+    }
+
 	/** inline element test */
 	@Test public void boldMarkupIsTwoStars() {
 		assertEquals(document(p(b("a"))), dut.document("**a**"));

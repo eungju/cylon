@@ -19,7 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LineCreoleParser implements CreoleParser {
-    private static final Pattern NEWLINE_PATTERN = Pattern.compile("\\r\\n|\\r|\\n");
+    private static final Pattern LINE_PATTERN = Pattern.compile(".*?(\\r\\n|\\r|\\n|$)");
     private final DomTrunk trunk;
     private final InlineParser inlineParser;
     private StringBuilder nowikiBuffer = null;
@@ -33,23 +33,17 @@ public class LineCreoleParser implements CreoleParser {
         Document root = new Document();
         trunk.descend(root);
 
-        Matcher matcher = NEWLINE_PATTERN.matcher(input);
-        int start = 0;
+        Matcher matcher = LINE_PATTERN.matcher(input);
         while (matcher.find()) {
-            String line = input.substring(start, matcher.end());
-            start = matcher.end();
-            recognizeBlockLine(line);
-        }
-        String line = input.substring(start);
-        if (!line.isEmpty()) {
-            recognizeBlockLine(line);
+            String line = matcher.group(0);
+            recognizeBlockLine(line, input.substring(matcher.end()));
         }
 
         return trunk.ascendTo(root);
     }
 
-    void recognizeBlockLine(String line) {
-        if (recognizeNowiki(line)) {
+    void recognizeBlockLine(String line, String remaining) {
+        if (recognizeNowiki(line, remaining)) {
         } else if (recognizeBlockSeparator(line)) {
         } else if (recognizeHeading(line)) {
         } else if (recognizeHorizontalRule(line)) {
@@ -61,12 +55,12 @@ public class LineCreoleParser implements CreoleParser {
         }
     }
 
-    private static final Pattern NOWIKI_OPEN_PATTERN = Pattern.compile("^\\{{3}\\s*");
-    private static final Pattern NOWIKI_CLOSE_PATTERN = Pattern.compile("^\\}{3}\\s*");
-    boolean recognizeNowiki(String line) {
+    private static final Pattern NOWIKI_OPEN_PATTERN = Pattern.compile("\\{{3}\\s*");
+    private static final Pattern NOWIKI_CLOSE_PATTERN = Pattern.compile("\\}{3}\\s*");
+    boolean recognizeNowiki(String line, String remaining) {
         if (nowikiBuffer == null) {
             Matcher matcher = NOWIKI_OPEN_PATTERN.matcher(line);
-            if (matcher.matches()) {
+            if (matcher.matches() && NOWIKI_CLOSE_PATTERN.matcher(remaining).find()) {
                 nowikiBuffer = new StringBuilder();
                 return true;
             }
