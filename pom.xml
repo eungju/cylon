@@ -4,7 +4,7 @@
     <groupId>cylon</groupId>
     <artifactId>cylon</artifactId>
     <packaging>jar</packaging>
-    <version>0.10-SNAPSHOT</version>
+    <version>0.10</version>
 
     <name>A Creole Markup Parser</name>
     <url>http://code.google.com/p/cylon</url>
@@ -129,7 +129,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <exclude></exclude>
+                        <exclude />
                     </excludes>
                 </configuration>
             </plugin>
