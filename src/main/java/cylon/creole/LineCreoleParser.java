@@ -19,7 +19,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LineCreoleParser implements CreoleParser {
-    private static final Pattern LINE_PATTERN = Pattern.compile(".*?(\\r\\n|\\r|\\n|$)");
     private final DomTrunk trunk;
     private final InlineParser inlineParser;
     private StringBuilder nowikiBuffer = null;
@@ -29,6 +28,7 @@ public class LineCreoleParser implements CreoleParser {
         inlineParser = new InlineParser(trunk);
     }
     
+    private static final Pattern LINE_PATTERN = Pattern.compile(".*?(\\r\\n|\\r|\\n|$)");
     public Document document(String input) {
         Document root = new Document();
         trunk.descend(root);
@@ -78,7 +78,7 @@ public class LineCreoleParser implements CreoleParser {
         }
     }
 
-    private static final Pattern BLOCK_SEPARATOR_PATTERN = Pattern.compile("^\\s*");
+    private static final Pattern BLOCK_SEPARATOR_PATTERN = Pattern.compile("\\s*");
     boolean recognizeBlockSeparator(String line) {
         Matcher matcher = BLOCK_SEPARATOR_PATTERN.matcher(line);
         if (matcher.matches()) {
@@ -88,7 +88,7 @@ public class LineCreoleParser implements CreoleParser {
         return false;
     }
 
-    private static final Pattern HEADING_PATTERN = Pattern.compile("^\\s*(={1,6})\\s*(.+?)\\s*(=+)?\\s*");
+    private static final Pattern HEADING_PATTERN = Pattern.compile("\\s*(={1,6})\\s*(.+?)\\s*(=+)?\\s*");
     boolean recognizeHeading(String line) {
         Matcher matcher = HEADING_PATTERN.matcher(line);
         if (matcher.matches()) {
@@ -99,7 +99,7 @@ public class LineCreoleParser implements CreoleParser {
         return false;
     }
 
-    private static final Pattern HORIZONTAL_RULE_PATTERN = Pattern.compile("^\\s*----\\s*");
+    private static final Pattern HORIZONTAL_RULE_PATTERN = Pattern.compile("\\s*----\\s*");
     boolean recognizeHorizontalRule(String line) {
         Matcher matcher = HORIZONTAL_RULE_PATTERN.matcher(line);
         if (matcher.matches()) {
@@ -110,7 +110,7 @@ public class LineCreoleParser implements CreoleParser {
         return false;
     }
 
-    private static final Pattern LIST_PATTERN = Pattern.compile("^\\s*(\\*+|#+)\\s*(.*?)\\s*");
+    private static final Pattern LIST_PATTERN = Pattern.compile("\\s*(\\*+|#+)\\s*(.*?)\\s*");
     boolean recognizeList(String line) {
         Matcher matcher = LIST_PATTERN.matcher(line);
         if (matcher.matches()) {
@@ -157,7 +157,7 @@ public class LineCreoleParser implements CreoleParser {
         return false;
     }
 
-    private static final Pattern TABLE_PATTERN = Pattern.compile("^\\s*(\\|.*?)\\|?\\s*");
+    private static final Pattern TABLE_PATTERN = Pattern.compile("\\s*(\\|.*?)\\|?\\s*");
     boolean recognizeTable(String line) {
         Matcher matcher = TABLE_PATTERN.matcher(line);
         if (matcher.matches()) {
@@ -197,7 +197,7 @@ public class LineCreoleParser implements CreoleParser {
         }
     }
     
-    private static final Pattern PARAGRAPH_PATTERN = Pattern.compile("^(?:(\\:+|>+)\\s*)?(.*)\\s*");
+    private static final Pattern PARAGRAPH_PATTERN = Pattern.compile("(?:(\\:+|>+)\\s*)?(.*)\\s*");
     boolean recognizeParagraph(String line) {
         Matcher matcher = PARAGRAPH_PATTERN.matcher(line);
         if (matcher.matches()) {
