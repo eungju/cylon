@@ -104,7 +104,6 @@ public class AdhocCreoleParser implements CreoleParser {
 	}
 
 	static class PreformattedRule extends BlockRule {
-        final Pattern closingBracesPattern = Pattern.compile("^\\p{Blank}(\\p{Blank}*\\}\\}\\}\\p{Blank}*)$", PATTERN_FLAGS);
 		public PreformattedRule() {
 			super("^\\{\\{\\{\\p{Blank}*" + NEWLINE + "((?s:.)*?)^\\}\\}\\}\\p{Blank}*$");
 		}

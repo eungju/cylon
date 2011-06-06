@@ -2,19 +2,13 @@ package cylon.html;
 
 import cylon.dom.DomBuilder;
 import cylon.dom.Text;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JMock;
-import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static org.apache.commons.lang.StringEscapeUtils.*;
 import static org.junit.Assert.*;
 
-@RunWith(JMock.class)
 public class HtmlRendererTest extends DomBuilder {
-	private Mockery mockery = new JUnit4Mockery();
 	private HtmlRenderer visitor;
 
 	@Before public void beforeEach() {

@@ -1,12 +1,10 @@
 package cylon.creole;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.util.regex.Matcher;
 
-import cylon.creole.Rule;
-import cylon.creole.RuleSet;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class RuleSetTest {
 	@Test public void simple() {
