@@ -119,8 +119,12 @@ public class LineCreoleParser implements CreoleParser {
     private static final Pattern LIST_PATTERN = Pattern.compile("^\\s*(\\*+|#+)\\s*(.*?)\\s*");
     boolean recognizeList(String line) {
         Matcher matcher = LIST_PATTERN.matcher(line);
-        if (matcher.matches() && (trunk.count(ItemList.class) > 0 || matcher.group(1).length() == 1)) {
+        if (matcher.matches()) {
             String bullets = matcher.group(1);
+            if (trunk.count(ItemList.class) == 0 && bullets.length() > 1) {
+                return false;
+            }
+
             //indent
             while (trunk.count(ItemList.class) < bullets.length()) {
                 ItemList list = bullets.charAt(trunk.count(ItemList.class)) == '*' ? new UnorderedList() : new OrderedList();
