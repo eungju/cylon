@@ -36,7 +36,8 @@ public class LineCreoleParser implements CreoleParser {
         Matcher matcher = LINE_PATTERN.matcher(input);
         while (matcher.find()) {
             String line = matcher.group(0);
-            recognizeBlockLine(line, input.substring(matcher.end()));
+            String remaining = input.substring(matcher.end());
+            recognizeBlockLine(line, remaining);
         }
 
         return trunk.ascendTo(root);
