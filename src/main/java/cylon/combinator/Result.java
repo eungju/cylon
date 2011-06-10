@@ -3,29 +3,34 @@ package cylon.combinator;
 import cylon.support.ObjectSupport;
 
 public class Result extends ObjectSupport {
-    public static Result success(CharSequence recognized, CharSequence remaining) {
-        return new Success(recognized, remaining);
+    private final CharSequence consumed;
+    private final CharSequence input;
+
+    public Result(CharSequence consumed, CharSequence input) {
+        this.consumed = consumed;
+        this.input = input;
+    }
+
+    public static Result success(CharSequence consumed, CharSequence input) {
+        return new Result(consumed, input);
     }
 
     public static Result failure(CharSequence input) {
-        return new Failure(input);
+        return new Result(null, input);
     }
 
-    public static class Success extends Result {
-        private CharSequence recognized;
-        private CharSequence remaining;
-
-        public Success(CharSequence recognized, CharSequence remaining) {
-            this.recognized = recognized;
-            this.remaining = remaining;
-        }
+    public boolean isSuccess() {
+        return consumed != null;
     }
 
-    public static class Failure extends Result {
-        private CharSequence input;
-
-        public Failure(CharSequence input) {
-            this.input = input;
+    public CharSequence consumed() {
+        if (isSuccess()) {
+            return consumed;
         }
+        throw new IllegalStateException("Failure");
+    }
+
+    public CharSequence input() {
+        return input;
     }
 }
