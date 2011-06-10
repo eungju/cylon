@@ -7,6 +7,12 @@ import static org.junit.Assert.assertThat;
 
 public class RecognizerTest {
     @Test public void
+    empty() {
+        assertThat(new EmptyParser().parse(""), is(Result.success("", "")));
+        assertThat(new EmptyParser().parse("abc"), is(Result.success("", "abc")));
+    }
+
+    @Test public void
     eofSuccess() {
         assertThat(new EofParser().parse(""), is(Result.success("", "")));
     }

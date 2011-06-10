@@ -1,7 +1,7 @@
 package cylon.combinator;
 
 public class ChoiceCombinator implements Parser {
-    private Parser[] parsers;
+    private final Parser[] parsers;
 
     public ChoiceCombinator(Parser... parsers) {
         this.parsers = parsers;

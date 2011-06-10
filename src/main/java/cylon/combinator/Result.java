@@ -19,15 +19,19 @@ public class Result extends ObjectSupport {
         return new Result(null, input);
     }
 
+    public boolean isFailure() {
+        return consumed == null;
+    }
+
     public boolean isSuccess() {
         return consumed != null;
     }
 
     public CharSequence consumed() {
-        if (isSuccess()) {
-            return consumed;
+        if (isFailure()) {
+            throw new IllegalStateException("Failure");
         }
-        throw new IllegalStateException("Failure");
+        return consumed;
     }
 
     public CharSequence input() {
