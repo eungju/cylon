@@ -18,7 +18,7 @@ public class CombinatorTest {
 
     @Test public void
     choiceSuccess() {
-        Parser dut = new ChoiceCombinator(new RegexParser("a"), new RegexParser("1"));
+        Parser dut = new ChoiceCombinator(new RegexParser("a"), new RegexParser("."));
         assertThat(dut.parse("abc"), is(Result.success("a", "bc")));
         assertThat(dut.parse("123"), is(Result.success("1", "23")));
     }

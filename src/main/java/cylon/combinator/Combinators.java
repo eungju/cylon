@@ -1,6 +1,14 @@
 package cylon.combinator;
 
 public class Combinators {
+    public static Parser choice(Parser... parsers) {
+        return new ChoiceCombinator(parsers);
+    }
+    
+    public static Parser sequence(Parser... parsers) {
+        return new SequenceCombinator(parsers);
+    }
+
     public static Parser zeroOrMore(Parser parser) {
         return new ZeroOrMoreCombinator(parser);
     }
