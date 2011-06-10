@@ -5,7 +5,7 @@ import org.junit.Test;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
-public class CombinatorTest {
+public class CombinatorsTest {
     @Test public void
     sequenceSuccess() {
         assertThat(new SequenceCombinator(new RegexParser("a"), new RegexParser("b")).parse("abc"), is(Result.success("ab", "c")));

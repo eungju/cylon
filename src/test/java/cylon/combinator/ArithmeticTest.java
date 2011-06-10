@@ -14,21 +14,19 @@ public class ArithmeticTest {
     ParserReference exprRef = new ParserReference();
 
     Parser value() {
-        return choice(regex("[0-9]+"), sequence(term('('), exprRef, term(')')));
+        return choice(regex("[0-9]+"), sequence(term("("), exprRef, term(")")));
     }
 
     Parser product() {
-        return sequence(value(), zeroOrMore(sequence(choice(term('*'), term('/')), value())));
+        return sequence(value(), zeroOrMore(sequence(choice(term("*"), term("/")), value())));
     }
 
     Parser sum() {
-        return sequence(product(), zeroOrMore(sequence(choice(term('+'), term('-')), product())));
+        return sequence(product(), zeroOrMore(sequence(choice(term("+"), term("-")), product())));
     }
 
     Parser expr() {
-        Parser expr = sum();
-        exprRef.set(expr);
-        return expr;
+        return exprRef.set(sum());
     }
 
     @Test

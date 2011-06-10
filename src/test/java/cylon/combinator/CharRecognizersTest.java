@@ -2,10 +2,11 @@ package cylon.combinator;
 
 import org.junit.Test;
 
+import static cylon.combinator.CharRecognizers.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class RecognizerTest {
+public class CharRecognizersTest {
     @Test public void
     empty() {
         assertThat(new EmptyParser().parse(""), is(Result.success("", "")));
@@ -24,7 +25,7 @@ public class RecognizerTest {
 
     @Test public void
     eolSuccess() {
-        Parser dut = new EolParser();
+        Parser dut = eol();
         assertThat(dut.parse(""), is(Result.success("", "")));
         assertThat(dut.parse("\r\n"), is(Result.success("", "\r\n")));
         assertThat(dut.parse("\n"), is(Result.success("", "\n")));
@@ -32,18 +33,19 @@ public class RecognizerTest {
 
     @Test public void
     eolFailure() {
-        assertThat(new EolParser().parse(" "), is(Result.failure(" ")));
+        assertThat(eol().parse(" "), is(Result.failure(" ")));
     }
 
     @Test public void
     regexSuccess() {
-        assertThat(new RegexParser("a").parse("abc"), is(Result.success("a", "bc")));
+        assertThat(regex("a").parse("abc"), is(Result.success("a", "bc")));
     }
 
     @Test public void
     regexFailure() {
-        assertThat(new RegexParser("a").parse(""), is(Result.failure("")));
-        assertThat(new RegexParser("a").parse("b"), is(Result.failure("b")));
-        assertThat(new RegexParser("a").parse("123abc"), is(Result.failure("123abc")));
+        Parser dut = regex("a");
+        assertThat(dut.parse(""), is(Result.failure("")));
+        assertThat(dut.parse("b"), is(Result.failure("b")));
+        assertThat(dut.parse("123abc"), is(Result.failure("123abc")));
     }
 }
