@@ -1,6 +1,6 @@
 package cylon.combinator;
 
-public class ChoiceCombinator extends Parser {
+public class ChoiceCombinator extends ActionParser {
     private final Parser[] parsers;
 
     public ChoiceCombinator(Parser... parsers) {

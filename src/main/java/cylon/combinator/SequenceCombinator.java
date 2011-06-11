@@ -3,7 +3,7 @@ package cylon.combinator;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SequenceCombinator extends Parser {
+public class SequenceCombinator extends ActionParser {
     private final Parser[] parsers;
 
     public SequenceCombinator(Parser... parsers) {

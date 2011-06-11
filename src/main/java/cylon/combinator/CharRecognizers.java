@@ -4,8 +4,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CharRecognizers {
-    public static Parser term(final CharSequence symbol) {
-       return new Parser() {
+    public static ActionParser term(final CharSequence symbol) {
+       return new ActionParser() {
            public Result parse(CharSequence input) {
                if (input.length() >= symbol.length() && input.subSequence(0, symbol.length()).equals(symbol)) {
                    return Result.success(action.apply(input.subSequence(0, symbol.length())), input.subSequence(symbol.length(), input.length()));
@@ -15,8 +15,8 @@ public class CharRecognizers {
        };
     }
 
-    public static Parser regex(final String regex) {
-        return new Parser() {
+    public static ActionParser regex(final String regex) {
+        return new ActionParser() {
             private final Pattern pattern = Pattern.compile(regex);
 
             public Result parse(CharSequence input) {
@@ -31,8 +31,8 @@ public class CharRecognizers {
         };
     }
 
-    public static Parser eol() {
-        return new Parser() {
+    public static ActionParser eol() {
+        return new ActionParser() {
             public Result parse(CharSequence input) {
                 if (input.length() == 0 || input.charAt(0) == '\r' || input.charAt(0) == '\n') {
                     return Result.success(action.apply(""), input);

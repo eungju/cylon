@@ -3,7 +3,7 @@ package cylon.combinator;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ZeroOrMoreCombinator extends Parser {
+public class ZeroOrMoreCombinator extends ActionParser {
     private final Parser parser;
 
     public ZeroOrMoreCombinator(Parser parser) {
