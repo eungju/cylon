@@ -3,15 +3,15 @@ package cylon.combinator;
 import cylon.support.ObjectSupport;
 
 public class Result extends ObjectSupport {
-    private final CharSequence consumed;
+    private final Object consumed;
     private final CharSequence input;
 
-    public Result(CharSequence consumed, CharSequence input) {
+    private Result(Object consumed, CharSequence input) {
         this.consumed = consumed;
         this.input = input;
     }
 
-    public static Result success(CharSequence consumed, CharSequence input) {
+    public static Result success(Object consumed, CharSequence input) {
         return new Result(consumed, input);
     }
 
@@ -27,7 +27,7 @@ public class Result extends ObjectSupport {
         return consumed != null;
     }
 
-    public CharSequence consumed() {
+    public Object consumed() {
         if (isFailure()) {
             throw new IllegalStateException("Failure");
         }

@@ -14,7 +14,7 @@ public class Combinators {
     }
 
     public static Parser oneOrMore(Parser parser) {
-        return new SequenceCombinator(parser, zeroOrMore(parser));
+        return new OneOrMoreCombinator(parser);
     }
 
     public static Parser optional(Parser parser) {

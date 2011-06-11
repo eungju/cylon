@@ -1,6 +1,6 @@
 package cylon.combinator;
 
-public class ChoiceCombinator implements Parser {
+public class ChoiceCombinator extends Parser {
     private final Parser[] parsers;
 
     public ChoiceCombinator(Parser... parsers) {
@@ -11,7 +11,7 @@ public class ChoiceCombinator implements Parser {
         for (Parser each : parsers) {
             Result result = each.parse(input);
             if (result.isSuccess()) {
-                return result;
+                return Result.success(action.apply(result.consumed()), result.input());
             }
         }
         return Result.failure(input);

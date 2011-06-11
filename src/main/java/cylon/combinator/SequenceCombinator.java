@@ -1,21 +1,26 @@
 package cylon.combinator;
 
-public class SequenceCombinator implements Parser {
-    private Parser[] parsers;
+import java.util.ArrayList;
+import java.util.List;
+
+public class SequenceCombinator extends Parser {
+    private final Parser[] parsers;
 
     public SequenceCombinator(Parser... parsers) {
         this.parsers = parsers;
     }
 
     public Result parse(CharSequence input) {
-        int pos = 0;
+        List<Object> consumed = new ArrayList<Object>();
+        CharSequence remaining = input;
         for (Parser each : parsers) {
-            Result result = each.parse(input.subSequence(pos, input.length()));
+            Result result = each.parse(remaining);
             if (result.isFailure()) {
                 return Result.failure(input);
             }
-            pos += result.consumed().length();
+            consumed.add(result.consumed());
+            remaining = result.input();
         }
-        return Result.success(input.subSequence(0, pos), input.subSequence(pos, input.length()));
+        return Result.success(action.apply(consumed), remaining);
     }
 }
