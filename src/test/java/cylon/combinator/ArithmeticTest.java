@@ -22,12 +22,12 @@ public class ArithmeticTest {
         Parser factor() {
             return choice(
                     regex("[0-9]+").with(new Action() {
-                        public Double apply(Object from) {
+                        public Double invoke(Object from) {
                             return Double.parseDouble(from.toString());
                         }
                     }),
                     sequence(term("("), expressionRef, term(")")).with(new Action() {
-                        public Double apply(Object from) {
+                        public Double invoke(Object from) {
                             return (Double) ((List) from).get(1);
                         }
                     }));
@@ -36,7 +36,7 @@ public class ArithmeticTest {
         Parser product() {
             return productRef.set(choice(
                     sequence(factor(), choice(term("*"), term("/")), productRef).with(new Action() {
-                        public Object apply(Object from) {
+                        public Object invoke(Object from) {
                             Double a = (Double) ((List) from).get(0);
                             Object operator = ((List) from).get(1);
                             Double b = (Double) ((List) from).get(2);
@@ -49,7 +49,7 @@ public class ArithmeticTest {
         Parser expression() {
             return expressionRef.set(choice(
                     sequence(product(), choice(term("+"), term("-")), expressionRef).with(new Action() {
-                        public Object apply(Object from) {
+                        public Object invoke(Object from) {
                             Double a = (Double) ((List) from).get(0);
                             Object operator = ((List) from).get(1);
                             Double b = (Double) ((List) from).get(2);
@@ -60,7 +60,7 @@ public class ArithmeticTest {
         }
 
         public double calculate(String expression) {
-            return (Double) parser.parse(expression).consumed();
+            return (Double) parser.parse(expression).derivative();
         }
     }
 

@@ -4,29 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OneOrMoreCombinator extends ActionParser {
-    private final Parser parser;
+    private final Parser expression;
 
-    public OneOrMoreCombinator(Parser parser) {
-        this.parser = parser;
+    public OneOrMoreCombinator(Parser expression) {
+        this.expression = expression;
     }
 
     public Result parse(CharSequence input) {
-        List<Object> consumed = new ArrayList<Object>();
+        List<Object> derivative = new ArrayList<Object>();
         CharSequence remaining = input;
-        Result result = parser.parse(remaining);
+        Result result = expression.parse(remaining);
         if (result.isFailure()) {
             return Result.failure(input);
         }
-        consumed.add(result.consumed());
+        derivative.add(result.derivative());
         remaining = result.input();
         while (true) {
-            result = parser.parse(remaining);
+            result = expression.parse(remaining);
             if (result.isFailure()) {
                 break;
             }
-            consumed.add(result.consumed());
+            derivative.add(result.derivative());
             remaining = result.input();
         }
-        return Result.success(action.apply(consumed), remaining);
+        return Result.success(action.invoke(derivative), remaining);
     }
 }

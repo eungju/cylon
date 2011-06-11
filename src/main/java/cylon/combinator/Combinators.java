@@ -1,23 +1,23 @@
 package cylon.combinator;
 
 public class Combinators {
-    public static ActionParser choice(Parser... parsers) {
-        return new ChoiceCombinator(parsers);
+    public static ActionParser choice(Parser... expressions) {
+        return new ChoiceCombinator(expressions);
     }
     
-    public static ActionParser sequence(Parser... parsers) {
-        return new SequenceCombinator(parsers);
+    public static ActionParser sequence(Parser... expressions) {
+        return new SequenceCombinator(expressions);
     }
 
-    public static ActionParser zeroOrMore(Parser parser) {
-        return new ZeroOrMoreCombinator(parser);
+    public static ActionParser zeroOrMore(Parser expressions) {
+        return new ZeroOrMoreCombinator(expressions);
     }
 
-    public static ActionParser oneOrMore(Parser parser) {
-        return new OneOrMoreCombinator(parser);
+    public static ActionParser oneOrMore(Parser expressions) {
+        return new OneOrMoreCombinator(expressions);
     }
 
-    public static ActionParser optional(Parser parser) {
-        return new ChoiceCombinator(parser, new EmptyParser());
+    public static ActionParser optional(Parser expression) {
+        return new ChoiceCombinator(expression, new EmptyParser());
     }
 }

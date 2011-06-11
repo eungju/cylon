@@ -4,23 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ZeroOrMoreCombinator extends ActionParser {
-    private final Parser parser;
+    private final Parser expression;
 
-    public ZeroOrMoreCombinator(Parser parser) {
-        this.parser = parser;
+    public ZeroOrMoreCombinator(Parser expression) {
+        this.expression = expression;
     }
 
     public Result parse(CharSequence input) {
-        List<Object> consumed = new ArrayList<Object>();
+        List<Object> derivative = new ArrayList<Object>();
         CharSequence remaining = input;
         while (true) {
-            Result result = parser.parse(remaining);
+            Result result = expression.parse(remaining);
             if (result.isFailure()) {
                 break;
             }
-            consumed.add(result.consumed());
+            derivative.add(result.derivative());
             remaining = result.input();
         }
-        return Result.success(action.apply(consumed), remaining);
+        return Result.success(action.invoke(derivative), remaining);
     }
 }

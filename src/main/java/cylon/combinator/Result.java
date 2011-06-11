@@ -3,16 +3,16 @@ package cylon.combinator;
 import cylon.support.ObjectSupport;
 
 public class Result extends ObjectSupport {
-    private final Object consumed;
+    private final Object derivative;
     private final CharSequence input;
 
-    private Result(Object consumed, CharSequence input) {
-        this.consumed = consumed;
+    private Result(Object derivative, CharSequence input) {
+        this.derivative = derivative;
         this.input = input;
     }
 
-    public static Result success(Object consumed, CharSequence input) {
-        return new Result(consumed, input);
+    public static Result success(Object derivative, CharSequence input) {
+        return new Result(derivative, input);
     }
 
     public static Result failure(CharSequence input) {
@@ -20,18 +20,18 @@ public class Result extends ObjectSupport {
     }
 
     public boolean isFailure() {
-        return consumed == null;
+        return derivative == null;
     }
 
     public boolean isSuccess() {
-        return consumed != null;
+        return derivative != null;
     }
 
-    public Object consumed() {
+    public Object derivative() {
         if (isFailure()) {
             throw new IllegalStateException("Failure");
         }
-        return consumed;
+        return derivative;
     }
 
     public CharSequence input() {
