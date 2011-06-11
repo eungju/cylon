@@ -33,7 +33,7 @@ public class Combinators {
         };
     }
 
-    public static Parser not(final Parser expression) {
+    public static ActionParser not(final Parser expression) {
         return new ActionParser() {
             public Result parse(CharSequence input) {
                 Result result = expression.parse(input);
