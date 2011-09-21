@@ -26,7 +26,7 @@ public class ArithmeticTest {
                             return Double.parseDouble(from.toString());
                         }
                     }),
-                    sequence(term("("), expressionRef, term(")")).with(new Action() {
+                    sequence(charSeq("("), expressionRef, charSeq(")")).with(new Action() {
                         public Double invoke(Object from) {
                             return (Double) ((List) from).get(1);
                         }
@@ -35,7 +35,7 @@ public class ArithmeticTest {
 
         Parser product() {
             return productRef.set(choice(
-                    sequence(factor(), choice(term("*"), term("/")), productRef).with(new Action() {
+                    sequence(factor(), choice(charSeq("*"), charSeq("/")), productRef).with(new Action() {
                         public Object invoke(Object from) {
                             Double a = (Double) ((List) from).get(0);
                             Object operator = ((List) from).get(1);
@@ -48,7 +48,7 @@ public class ArithmeticTest {
 
         Parser expression() {
             return expressionRef.set(choice(
-                    sequence(product(), choice(term("+"), term("-")), expressionRef).with(new Action() {
+                    sequence(product(), choice(charSeq("+"), charSeq("-")), expressionRef).with(new Action() {
                         public Object invoke(Object from) {
                             Double a = (Double) ((List) from).get(0);
                             Object operator = ((List) from).get(1);

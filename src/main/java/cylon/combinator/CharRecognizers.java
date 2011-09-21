@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CharRecognizers {
-    public static ActionParser term(final CharSequence symbol) {
+    public static ActionParser charSeq(final CharSequence symbol) {
        return new ActionParser() {
            public Result parse(CharSequence input) {
                if (input.length() >= symbol.length() && input.subSequence(0, symbol.length()).equals(symbol)) {
