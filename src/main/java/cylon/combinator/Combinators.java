@@ -1,6 +1,14 @@
 package cylon.combinator;
 
 public class Combinators {
+    public static ActionParser empty() {
+        return new EmptyParser();
+    }
+
+    public static ActionParser any() {
+        return new AnyParser();
+    }
+
     public static ActionParser choice(Parser... expressions) {
         return new ChoiceCombinator(expressions);
     }
@@ -18,7 +26,7 @@ public class Combinators {
     }
 
     public static ActionParser optional(Parser expression) {
-        return new ChoiceCombinator(expression, new EmptyParser());
+        return choice(expression, empty());
     }
 
     public static ActionParser and(final Parser expression) {
@@ -26,7 +34,7 @@ public class Combinators {
             public Result parse(CharSequence input) {
                 Result result = expression.parse(input);
                 if (result.isSuccess()) {
-                    return Result.success(action.invoke(input.subSequence(0, 0)), input);
+                    return Result.success(action.invoke(EmptyParser.EMPTY), input);
                 }
                 return Result.failure(input);
             }
@@ -38,10 +46,11 @@ public class Combinators {
             public Result parse(CharSequence input) {
                 Result result = expression.parse(input);
                 if (result.isFailure()) {
-                    return Result.success(action.invoke(input.subSequence(0, 0)), input);
+                    return Result.success(action.invoke(EmptyParser.EMPTY), input);
                 }
                 return Result.failure(input);
             }
         };
     }
+
 }

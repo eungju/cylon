@@ -8,27 +8,21 @@ import static org.junit.Assert.assertThat;
 
 public class CharRecognizersTest {
     @Test public void
-    empty() {
-        assertThat(new EmptyParser().parse(""), is(Result.success("", "")));
-        assertThat(new EmptyParser().parse("abc"), is(Result.success("", "abc")));
-    }
-
-    @Test public void
     eofSuccess() {
-        assertThat(new EofParser().parse(""), is(Result.success("", "")));
+        assertThat(eof().parse(""), is(Result.success("", "")));
     }
 
     @Test public void
     eofFailure() {
-        assertThat(new EofParser().parse(" "), is(Result.failure(" ")));
+        assertThat(eof().parse(" "), is(Result.failure(" ")));
     }
 
     @Test public void
     eolSuccess() {
         Parser dut = eol();
-        assertThat(dut.parse(""), is(Result.success("", "")));
-        assertThat(dut.parse("\r\n"), is(Result.success("", "\r\n")));
-        assertThat(dut.parse("\n"), is(Result.success("", "\n")));
+        assertThat(dut.parse("\r\n"), is(Result.success("\r\n", "")));
+        assertThat(dut.parse("\n"), is(Result.success("\n", "")));
+        assertThat(dut.parse("\r"), is(Result.success("\r", "")));
     }
 
     @Test public void

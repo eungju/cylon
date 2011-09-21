@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CharRecognizers {
-    public static ActionParser charSeq(final CharSequence symbol) {
+    public static ActionParser literal(final CharSequence symbol) {
        return new ActionParser() {
            public Result parse(CharSequence input) {
                if (input.length() >= symbol.length() && input.subSequence(0, symbol.length()).equals(symbol)) {
@@ -32,13 +32,10 @@ public class CharRecognizers {
     }
 
     public static ActionParser eol() {
-        return new ActionParser() {
-            public Result parse(CharSequence input) {
-                if (input.length() == 0 || input.charAt(0) == '\r' || input.charAt(0) == '\n') {
-                    return Result.success(action.invoke(input.subSequence(0, 0)), input);
-                }
-                return Result.failure(input);
-            }
-        };
+        return Combinators.choice(literal("\r\n"), literal("\r"), literal("\n"));
+    }
+
+    public static ActionParser eof() {
+        return Combinators.not(Combinators.any());
     }
 }
