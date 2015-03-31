@@ -7,9 +7,9 @@ A Creole Markup Parser.
 
 ## Creole
 
- * All of [http://www.wikicreole.org/wiki/Creole1.0 Creole 1.0]
+ * All of [Creole 1.0](http://www.wikicreole.org/wiki/Creole1.0)
  * Some additions: superscript, subscript and underline
- * Creole 1.0 test: [http://cylon.googlecode.com/hg/src/test/java/cylon/creole/creole1.0test.txt Creole] to [http://cylon.googlecode.com/hg/src/test/java/cylon/creole/creole1.0test.html HTML]
+ * Creole 1.0 test: [Creole](http://cylon.googlecode.com/hg/src/test/java/cylon/creole/creole1.0test.txt) to [HTML](http://cylon.googlecode.com/hg/src/test/java/cylon/creole/creole1.0test.html)
 
 # News
 
@@ -17,7 +17,7 @@ A Creole Markup Parser.
 
  * Support multi-line list items
  * Many small fixes
- * See [http://code.google.com/p/cylon/source/browse/src/main/java/cylon/examples/CreoleExample.java an example]
+ * See [example](http://code.google.com/p/cylon/source/browse/src/main/java/cylon/examples/CreoleExample.java)
 
 ## 0.9 released
 
